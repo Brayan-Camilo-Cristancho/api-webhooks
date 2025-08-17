@@ -14,11 +14,11 @@ pipeline {
             steps {
                 script {
                     // Login a Docker Hub usando credenciales guardadas en Jenkins
-                    withCredentials([string(credentialsId: 'docker-webhook')]) {
-                        sh """
-                            echo \$DOCKER_TOKEN | docker login -u brayancristancho --password-stdin
-                        """
-                    }
+                 withCredentials([string(credentialsId: 'docker-webhook', variable: 'DOCKER_TOKEN')]) {
+                    sh """
+                        echo \$DOCKER_TOKEN | docker login -u brayancristancho --password-stdin
+                    """
+                    }   
 
                     // Construir la imagen
                     sh """
