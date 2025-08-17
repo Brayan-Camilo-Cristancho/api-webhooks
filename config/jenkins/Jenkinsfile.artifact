@@ -13,21 +13,18 @@ pipeline {
             }
         }
 
-		stage('Build & Push') {
-			steps {
-				script {
+        stage('Build & Push') {
+            steps {
+                script {
+                    def tag = "${new Date().format('yyyyMMdd')}-${env.BUILD_NUMBER}"
+                    def fullImageName = "${nameImage}:${tag}"
 
-					def tag = "${new Date().format('yyyyMMdd')}-${env.BUILD_NUMBER}"
-
-					def fullImageName = "${nameImage}:${tag}"
-
-					docker.withRegistry('https://index.docker.io/v1/', 'token-docker-hub') {
-						def myImage = docker.build(fullImageName, "-f ${dockerFile} .")
-						myImage.push()
-					}
-				}
-			}
-		}
-
+                    docker.withServer('unix:///var/run/docker.sock') {
+                        def myImage = docker.build(fullImageName, "-f ${dockerFile} .")
+                        myImage.push()
+                    }
+                }
+            }
+        }
     }
 }
