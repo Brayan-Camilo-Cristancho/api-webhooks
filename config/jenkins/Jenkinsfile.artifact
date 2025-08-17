@@ -18,10 +18,10 @@ pipeline {
 				script {
 
 					def tag = "${new Date().format('yyyyMMdd')}-${env.BUILD_NUMBER}"
-					
+
 					def fullImageName = "${nameImage}:${tag}"
 
-					docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials-id') {
+					docker.withRegistry('https://index.docker.io/v1/', 'token-docker-hub') {
 						def myImage = docker.build(fullImageName, "-f ${dockerFile} .")
 						myImage.push()
 					}
