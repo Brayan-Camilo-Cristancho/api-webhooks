@@ -1,0 +1,36 @@
+import groovy.transform.Field
+
+@Field String dockerFile = "config/docker/Dockerfile"
+@Field String nameImage = "image-webhook"
+
+pipeline {
+
+	agent { dockerfile true }
+
+	stages {
+
+		stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+		stage('Build & Push') {
+            steps {
+                script {
+
+                    def tag = "${new Date().format('yyyyMMdd')}-${env.BUILD_NUMBER}"
+
+                    def fullImageName = "${nameImage}:${tag}"
+
+                    def myImage = docker.build(fullImageName, dockerFile)
+
+					myImage.push()
+
+                }
+            }
+        }
+		
+	}
+
+}
