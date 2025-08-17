@@ -11,10 +11,17 @@ pipeline {
     stages {
         stage('Build & Push') {
             steps {
-                withDockerRegistry([credentialsId: 'token-docker-hub', url: '']) {
+                withDockerRegistry([credentialsId: 'token-docker-hub',variable: 'DOCKER_TOKEN']) {
+					  sh """
+							echo $DOCKER_TOKEN | docker login -u brayancristancho --password-stdin
+						"""
                     sh 'docker build -t brayancristancho/mi-app:latest .'
                     sh 'docker push brayancristancho/mi-app:latest'
                 }
+				withCredentials([string(credentialsId: 'dockerhub-token', variable: 'DOCKER_TOKEN')]) {
+  
+}
+
             }
         }
     }
