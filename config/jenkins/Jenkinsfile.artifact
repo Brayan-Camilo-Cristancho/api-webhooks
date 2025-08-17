@@ -8,20 +8,26 @@ pipeline {
     environment {
         DOCKER_HOST = "unix:///var/run/docker.sock"
     }
+
     stages {
         stage('Build & Push') {
             steps {
-                withDockerRegistry([credentialsId: 'token-docker-hub',variable: 'DOCKER_TOKEN']) {
-					  sh """
-							echo $DOCKER_TOKEN | docker login -u brayancristancho --password-stdin
-						"""
-                    sh 'docker build -t brayancristancho/mi-app:latest .'
-                    sh 'docker push brayancristancho/mi-app:latest'
-                }
-				withCredentials([string(credentialsId: 'dockerhub-token', variable: 'DOCKER_TOKEN')]) {
-  
-}
+                script {
+                    // Login a Docker Hub usando credenciales guardadas en Jenkins
+                    withCredentials([string(credentialsId: 'docker-webhook')]) {
+                        sh """
+                            echo \$DOCKER_TOKEN | docker login -u brayancristancho --password-stdin
+                        """
+                    }
 
+                    // Construir la imagen
+                    sh """
+                        docker build -f ${dockerFile} -t brayancristancho/mi-app:latest .
+                    """
+
+                    // Publicar la imagen en Docker Hub
+                    sh "docker push brayancristancho/mi-app:latest"
+                }
             }
         }
     }
