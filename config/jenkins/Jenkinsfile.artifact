@@ -5,24 +5,15 @@ import groovy.transform.Field
 
 pipeline {
     agent any
-
+    environment {
+        DOCKER_HOST = "unix:///var/run/docker.sock"
+    }
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
         stage('Build & Push') {
             steps {
-                script {
-                    def tag = "${new Date().format('yyyyMMdd')}-${env.BUILD_NUMBER}"
-                    def fullImageName = "${nameImage}:${tag}"
-
-                    docker.withServer('unix:///var/run/docker.sock') {
-                        def myImage = docker.build(fullImageName, "-f ${dockerFile} .")
-                        myImage.push()
-                    }
+                withDockerRegistry([credentialsId: 'token-docker-hub', url: '']) {
+                    sh 'docker build -t brayancristancho/mi-app:latest .'
+                    sh 'docker push brayancristancho/mi-app:latest'
                 }
             }
         }
