@@ -13,16 +13,21 @@ pipeline {
             }
         }
 
-        stage('Build & Push') {
-            steps {
-                script {
-                    def tag = "${new Date().format('yyyyMMdd')}-${env.BUILD_NUMBER}"
-                    def fullImageName = "${nameImage}:${tag}"
+		stage('Build & Push') {
+			steps {
+				script {
 
-                    def myImage = docker.build(fullImageName, "-f ${dockerFile} .")
-                    myImage.push()
-                }
-            }
-        }
+					def tag = "${new Date().format('yyyyMMdd')}-${env.BUILD_NUMBER}"
+					
+					def fullImageName = "${nameImage}:${tag}"
+
+					docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials-id') {
+						def myImage = docker.build(fullImageName, "-f ${dockerFile} .")
+						myImage.push()
+					}
+				}
+			}
+		}
+
     }
 }
