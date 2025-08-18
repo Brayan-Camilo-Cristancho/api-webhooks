@@ -6,6 +6,7 @@ pipeline {
 		string(name: 'VM_IP', defaultValue: '20.64.146.117', description: 'IP pública de la VM en Azure')
 		string(name: 'TAG', defaultValue: 'latest', description: 'Tag a descargar')
 		string(name: 'NAME_APP', defaultValue: 'webhook_api_artifact', description: 'Nombre de la aplicación/imagen')
+		string(name: 'DOCKER_USER', defaultValue: 'webhook_api_artifact', description: 'Nombre de la aplicación/imagen')
 	}
 
 
