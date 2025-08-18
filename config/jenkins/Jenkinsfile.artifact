@@ -14,7 +14,7 @@ pipeline {
                     string(credentialsId: 'docker-webhook', variable: 'DOCKER_TOKEN')
                 ]) {
                     script {
-                        
+
                         sh """
                             echo \$DOCKER_TOKEN | docker login -u \$DOCKER_USER --password-stdin
                         """
@@ -34,12 +34,10 @@ pipeline {
                     sh """
                         echo "Construyendo imagen ${fullImage}"
                         docker build -f ${dockerFile} -t ${fullImage} .
-                        docker tag ${fullImage} ${env.DOCKER_USER}/${nameImage}:latest
                     """
 
                     sh """
                         docker push ${fullImage}
-                        docker push ${env.DOCKER_USER}/${nameImage}:latest
                     """
                 }
             }
