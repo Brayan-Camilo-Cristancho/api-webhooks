@@ -6,7 +6,6 @@ pipeline {
         string(name: 'VM_IP', defaultValue: '20.64.146.117', description: 'IP pública de la VM en Azure')
         string(name: 'TAG', defaultValue: 'latest', description: 'Tag a descargar')
         string(name: 'NAME_APP', defaultValue: 'webhook_api_artifact', description: 'Nombre de la aplicación')
-        string(name: 'DOCKER_USER', defaultValue: 'webhookapi', description: 'Usuario de Docker Hub')
     }
 
     stages {
@@ -17,9 +16,9 @@ pipeline {
                     string(credentialsId: 'docker-webhook', variable: 'DOCKER_TOKEN')
                 ]) {
                     sshagent(['azure_vm_key']) {
-                        sh """
-                            ssh -o StrictHostKeyChecking=no ${params.VM_USER}@${params.VM_IP} '
-                                echo "🔑 Conectado a \$(hostname)"
+                        sh '''
+                            ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP '
+                                echo "🔑 Conectado a $(hostname)"
 
                                 if command -v docker >/dev/null 2>&1; then
                                     echo "✔ Docker ya está instalado:"
@@ -31,8 +30,8 @@ pipeline {
                                     sudo install -m 0755 -d /etc/apt/keyrings
                                     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo tee /etc/apt/keyrings/docker.asc > /dev/null
                                     sudo chmod a+r /etc/apt/keyrings/docker.asc
-                                    echo "deb [arch=\$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \\
-                                        \$(. /etc/os-release && echo "\${UBUNTU_CODENAME:-\$VERSION_CODENAME}") stable" | \\
+                                    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+                                        $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
                                         sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
                                     sudo apt-get update -y
                                     sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
@@ -40,29 +39,47 @@ pipeline {
                                 fi
 
                                 echo "🔐 Logueando en Docker Hub..."
+                                echo $DOCKER_TOKEN | docker login -u $DOCKER_USER_CRED --password-stdin
 
-                                echo \${DOCKER_TOKEN} | docker login -u \${DOCKER_USER_CRED} --password-stdin
+                                echo "🚀 Desplegando $NAME_APP:$TAG..."
+                                docker pull $DOCKER_USER/$NAME_APP:$TAG
 
-                                echo "🚀 Desplegando ${params.NAME_APP}:${params.TAG}..."
-								
-                                docker pull ${params.DOCKER_USER}/${params.NAME_APP}:${params.TAG}
-
-                                if [ \$(docker ps -a -q -f name=${params.NAME_APP}) ]; then
+                                if [ $(docker ps -a -q -f name=$NAME_APP) ]; then
                                     echo "🛑 Deteniendo y eliminando contenedor existente..."
-                                    docker stop ${params.NAME_APP} || true
-                                    docker rm ${params.NAME_APP} || true
+                                    docker stop $NAME_APP || true
+                                    docker rm $NAME_APP || true
                                 fi
 
-                                docker run -d --name ${params.NAME_APP} -p 80:3000 ${params.DOCKER_USER}/${params.NAME_APP}:${params.TAG}
+                                docker run -d --name $NAME_APP -p 80:3000 $DOCKER_USER/$NAME_APP:$TAG
                                 echo "✅ Despliegue finalizado"
                             '
-                        """
+                        '''
                     }
+                }
+            }
+        }
+		
+		stage('Validate Deployment') {
+            steps {
+                sshagent(['azure_vm_key']) {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP '
+                            echo "🔍 Validando despliegue de $NAME_APP..."
+                            if docker ps --filter "name=$NAME_APP" --filter "status=running" | grep $NAME_APP; then
+                                echo "✅ Contenedor $NAME_APP está corriendo correctamente"
+                            else
+                                echo "⚠️ El contenedor $NAME_APP no está corriendo. Mostrando logs..."
+                                docker logs $NAME_APP || echo "❌ No se encontraron logs del contenedor"
+                                exit 1
+                            fi
+                        '
+                    '''
                 }
             }
         }
     }
 }
+
 
 
 // pipeline {
