@@ -14,7 +14,7 @@ pipeline {
                     string(credentialsId: 'docker-webhook', variable: 'DOCKER_TOKEN')
                 ]) {
                     script {
-                        echo "Conectando a Docker Hub como ${DOCKER_USER}"
+                        
                         sh """
                             echo \$DOCKER_TOKEN | docker login -u \$DOCKER_USER --password-stdin
                         """
