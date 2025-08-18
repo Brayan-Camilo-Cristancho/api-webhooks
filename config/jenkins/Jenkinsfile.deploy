@@ -16,7 +16,7 @@ pipeline {
                     string(credentialsId: 'docker-webhook', variable: 'DOCKER_TOKEN')
                 ]) {
                     sshagent(['azure_vm_key']) {
-                        sh '''
+                        sh """
                             ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP '
                                 echo "🔑 Conectado a $(hostname)"
 
@@ -53,7 +53,7 @@ pipeline {
                                 docker run -d --name $NAME_APP -p 80:3000 $DOCKER_USER/$NAME_APP:$TAG
                                 echo "✅ Despliegue finalizado"
                             '
-                        '''
+                        """
                     }
                 }
             }
