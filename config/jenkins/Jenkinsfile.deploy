@@ -1,12 +1,13 @@
 pipeline {
     agent any
 
-    parameters {
-        string(name: 'VM_USER', description: 'Usuario SSH de la VM en Azure')
-        string(name: 'VM_IP', description: 'IP pública de la VM en Azure')
-		string(name: 'NAME_IMAGE', description: 'Nombre de la imagen Docker')
-		string(name: 'NAME_APP', description: 'Nombre de la aplicación')
-    }
+	parameters {
+		string(name: 'VM_USER', defaultValue: 'azureuser_webhooks', description: 'Usuario SSH de la VM en Azure')
+		string(name: 'VM_IP', defaultValue: '20.64.146.117', description: 'IP pública de la VM en Azure')
+		string(name: 'TAG', defaultValue: 'latest', description: 'Tag a descargar')
+		string(name: 'NAME_APP', defaultValue: 'webhook_api_artifact', description: 'Nombre de la aplicación/imagen')
+	}
+
 
     stages {
         stage('Connect to VM') {
@@ -78,7 +79,7 @@ pipeline {
 			steps {
 				script {
 					sh """
-						docker pull ${NAME_IMAGE}
+						docker pull ${DOCKER_USER}/${NAME_APP}:${TAG}
 
 						if [ \$(docker ps -a -q -f name=${NAME_APP}) ]; then
 							echo "Deteniendo y eliminando contenedor existente..."
@@ -86,11 +87,12 @@ pipeline {
 							docker rm ${NAME_APP} || true
 						fi
 
-						docker run -d --name ${NAME_APP} -p 80:3000 ${NAME_IMAGE}
+						docker run -d --name ${NAME_APP} -p 80:3000 ${DOCKER_USER}/${NAME_APP}:${TAG}
 					"""
 				}
 			}
 		}
+
     }
 }
 
