@@ -4,6 +4,8 @@ pipeline {
     parameters {
         string(name: 'VM_USER', description: 'Usuario SSH de la VM en Azure')
         string(name: 'VM_IP', description: 'IP pública de la VM en Azure')
+		string(name: 'NAME_IMAGE', description: 'Nombre de la imagen Docker')
+		string(name: 'NAME_APP', description: 'Nombre de la aplicación')
     }
 
     stages {
@@ -51,6 +53,41 @@ pipeline {
 								docker --version
 							fi
 					'''
+				}
+			}
+		}
+		
+		stage('Login Docker Hub') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'docker-user',  variable: 'DOCKER_USER'),
+                    string(credentialsId: 'docker-webhook', variable: 'DOCKER_TOKEN')
+                ]) {
+                    script {
+
+                        sh """
+                            echo \$DOCKER_TOKEN | docker login -u \$DOCKER_USER --password-stdin
+                        """
+                        env.DOCKER_USER = "${DOCKER_USER}"
+                    }
+                }
+            }
+        }
+
+		stage('Deploy') {
+			steps {
+				script {
+					sh """
+						docker pull ${NAME_IMAGE}
+
+						if [ \$(docker ps -a -q -f name=${NAME_APP}) ]; then
+							echo "Deteniendo y eliminando contenedor existente..."
+							docker stop ${NAME_APP} || true
+							docker rm ${NAME_APP} || true
+						fi
+
+						docker run -d --name ${NAME_APP} -p 80:3000 ${NAME_IMAGE}
+					"""
 				}
 			}
 		}
