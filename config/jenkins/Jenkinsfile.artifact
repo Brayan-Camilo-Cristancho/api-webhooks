@@ -1,32 +1,46 @@
 import groovy.transform.Field
 
 @Field String dockerFile = "config/docker/Dockerfile"
-@Field String nameImage = "image-webhook"
+@Field String nameImage = "webhook_api_artifact"
 
 pipeline {
     agent any
-    environment {
-        DOCKER_HOST = "unix:///var/run/docker.sock"
-    }
 
     stages {
+        stage('Login Docker Hub') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'docker-user',  variable: 'DOCKER_USER'),
+                    string(credentialsId: 'docker-webhook', variable: 'DOCKER_TOKEN')
+                ]) {
+                    script {
+                        echo "Conectando a Docker Hub como ${DOCKER_USER}"
+                        sh """
+                            echo \$DOCKER_TOKEN | docker login -u \$DOCKER_USER --password-stdin
+                        """
+                        env.DOCKER_USER = "${DOCKER_USER}"
+                    }
+                }
+            }
+        }
+
         stage('Build & Push') {
             steps {
                 script {
-                    // Login a Docker Hub usando credenciales guardadas en Jenkins
-                 withCredentials([string(credentialsId: 'docker-webhook', variable: 'DOCKER_TOKEN')]) {
-                    sh """
-                        echo \$DOCKER_TOKEN | docker login -u brayancristancho --password-stdin
-                    """
-                    }   
+                    def buildDate = sh(script: "date +%Y%m%d", returnStdout: true).trim()
+                    def tag = "${buildDate}-${env.BUILD_NUMBER}"
+                    def fullImage = "${env.DOCKER_USER}/${nameImage}:${tag}"
 
-                    // Construir la imagen
                     sh """
-                        docker build -f ${dockerFile} -t brayancristancho/mi-app:latest .
+                        echo "Construyendo imagen ${fullImage}"
+                        docker build -f ${dockerFile} -t ${fullImage} .
+                        docker tag ${fullImage} ${env.DOCKER_USER}/${nameImage}:latest
                     """
 
-                    // Publicar la imagen en Docker Hub
-                    sh "docker push brayancristancho/mi-app:latest"
+                    sh """
+                        docker push ${fullImage}
+                        docker push ${env.DOCKER_USER}/${nameImage}:latest
+                    """
                 }
             }
         }
