@@ -52,5 +52,3 @@ Feel free to submit issues or pull requests for improvements or bug fixes.
 
 
 dckr_pat_21V9Yd55iIO2T5SsL8CT9xlC-94
-
-prueba
