@@ -1,12 +1,33 @@
-import { Router } from 'express';
+import crypto from "crypto";
+import type { Request, Response } from 'express';
 
-const router = Router();
+const GITHUB_SECRET = process.env.GITHUB_SECRET || "miSuperSecreto123";
 
-// Middleware example: Logging requests
-router.use((req, res, next) => {
-    console.log(`${req.method} ${req.url}`);
-    next();
-});
+function verifySignature(req: Request, _: Response, buf: Buffer) {
 
-// Export the middleware
-export default router;
+    const signature = req.headers["x-hub-signature-256"] as string | undefined;
+
+    if (!signature) {
+        throw new Error("Firma no encontrada en headers");
+    }
+
+    const hmac = crypto.createHmac("sha256", GITHUB_SECRET);
+
+    hmac.update(buf);
+
+
+    const digest = `sha256=${hmac.digest("hex")}`;
+
+    const sigBuf = Buffer.from(signature);
+
+    const digBuf = Buffer.from(digest);
+
+    if (
+        sigBuf.length !== digBuf.length ||
+        !crypto.timingSafeEqual(sigBuf, digBuf)
+    ) {
+        throw new Error("Firma inválida");
+    }
+}
+
+export { verifySignature }
