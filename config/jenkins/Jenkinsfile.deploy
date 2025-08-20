@@ -31,7 +31,8 @@ pipeline {
                 sshagent(['azure_vm_key']) {
                     sh """
                         scp -o StrictHostKeyChecking=no config/scripts/validate.sh ${VM_USER}@${VM_IP}:/tmp/validate.sh
-                        ssh -o StrictHostKeyChecking=no ${VM_USER}@${VM_IP} "bash /tmp/validate.sh"
+                        ssh -o StrictHostKeyChecking=no ${VM_USER}@${VM_IP} \
+                            NAME_APP=${NAME_APP} bash /tmp/validate.sh
                     """
                 }
             }
