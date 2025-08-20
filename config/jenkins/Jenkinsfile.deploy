@@ -44,7 +44,7 @@ pipeline {
                                         echo '🚀 Desplegando ${NAME_APP}:${TAG}...'
                                         docker pull ${DOCKER_USER_CRED}/${NAME_APP}:${TAG}
 
-                                        if [ \$(docker ps -a -q -f name=${NAME_APP}) ]; then
+                                        if [ \$(docker ps -a -f name=${NAME_APP}) ]; then
                                             echo '🛑 Deteniendo y eliminando contenedor existente...'
                                             docker stop ${NAME_APP} || true
                                             docker rm ${NAME_APP} || true
