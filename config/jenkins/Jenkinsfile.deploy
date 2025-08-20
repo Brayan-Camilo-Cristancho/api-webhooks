@@ -29,23 +29,10 @@ pipeline {
         stage('Validate Deployment') {
             steps {
                 sshagent(['azure_vm_key']) {
-                    script {
-                        sh(
-                            script: """
-                                ssh -o StrictHostKeyChecking=no ${VM_USER}@${VM_IP} "
-                                    echo '🔍 Validando despliegue de ${NAME_APP}...'
-                                    if docker ps --filter 'name=${NAME_APP}' --filter 'status=running' | grep ${NAME_APP}; then
-                                        echo '✅ Contenedor ${NAME_APP} está corriendo correctamente'
-                                    else
-                                        echo '⚠️ El contenedor ${NAME_APP} no está corriendo. Mostrando logs...'
-                                        docker logs ${NAME_APP} || echo '❌ No se encontraron logs del contenedor'
-                                        exit 1
-                                    fi
-                                "
-                            """,
-                            returnStdout: true
-                        )
-                    }
+                    sh """
+                        scp -o StrictHostKeyChecking=no config/scripts/validate.sh ${VM_USER}@${VM_IP}:/tmp/validate.sh
+                        ssh -o StrictHostKeyChecking=no ${VM_USER}@${VM_IP} "bash /tmp/validate.sh"
+                    """
                 }
             }
         }
