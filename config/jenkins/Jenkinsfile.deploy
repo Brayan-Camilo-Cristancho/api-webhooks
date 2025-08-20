@@ -41,7 +41,7 @@ pipeline {
                                         echo '🔐 Logueando en Docker Hub...'
                                         echo ${DOCKER_TOKEN} | docker login -u ${DOCKER_USER_CRED} --password-stdin
 
-                                        echo '🚀 Desplegando ${NAME_APP}:${TAG}...'
+                                        // echo '🚀 Desplegando ${NAME_APP}:${TAG}...'
                                         
                                         docker pull \${DOCKER_USER_CRED}/\${NAME_APP}:\${TAG}
 
