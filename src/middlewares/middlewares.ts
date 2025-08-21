@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import type { Request, Response } from 'express';
 
-const GITHUB_SECRET = process.env.GITHUB_SECRET || "miSuperSecreto123";
+const GITHUB_SECRET = process.env.GITHUB_SECRET;
 
 function verifySignature(req: Request, _: Response, buf: Buffer) {
 
@@ -9,6 +9,10 @@ function verifySignature(req: Request, _: Response, buf: Buffer) {
 
     if (!signature) {
         throw new Error("Firma no encontrada en headers");
+    }
+
+    if(!GITHUB_SECRET) {
+        throw new Error("Clave secreta")
     }
 
     const hmac = crypto.createHmac("sha256", GITHUB_SECRET);

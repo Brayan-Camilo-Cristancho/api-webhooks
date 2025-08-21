@@ -17,4 +17,4 @@ export function setRoutes(app: Application) {
         json({ verify: verifySignature }),
         generatePullRequest
     );
-}
+}2

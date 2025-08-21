@@ -6,7 +6,7 @@
     "outDir": "./dist",
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "esnext",
+    "module": "nodenext",
     "target": "esnext",
     "types": [],
     // For nodejs:
@@ -20,7 +20,7 @@
     // Stricter Typechecking Options
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
-	"allowSyntheticDefaultImports":true,
+    "allowSyntheticDefaultImports": true,
     // Style Options
     // "noImplicitReturns": true,
     // "noImplicitOverride": true,
@@ -35,6 +35,9 @@
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
-    "skipLibCheck": true,
+     "moduleResolution": "nodenext", 
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true     
   }
 }
