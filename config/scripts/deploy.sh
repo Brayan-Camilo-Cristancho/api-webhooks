@@ -30,6 +30,8 @@ if [ $(docker ps -a -q -f name=${NAME_APP}) ]; then
     docker rm ${NAME_APP} || true
 fi
 
+source ~/.bashrc
+
 docker run -d --name ${NAME_APP} \
   -p 80:3000 \
   -e GITHUB_SECRET_VALIDATION_DEV="$GITHUB_SECRET_VALIDATION_DEV" \
