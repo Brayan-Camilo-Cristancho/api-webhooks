@@ -1,8 +1,6 @@
 import { Octokit } from "octokit";
 import { GitHubApiError } from "../utils/index.js";
-import * as dotenv from "dotenv";
 
-dotenv.config();
 
 const octokit = new Octokit({ auth: process.env.GITHUB_SECRET_API });
 

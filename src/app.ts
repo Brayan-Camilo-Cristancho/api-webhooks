@@ -1,12 +1,12 @@
 import express, { json } from 'express';
 import type { Application } from 'express';
 import { setRoutes } from './routes/index.js';
-
-import { authApi } from './config/config.js';
 import { errorHandler, notFoundHandler } from './middlewares/index.js';
+import { appConfig } from './config/index.js';
+import { authApi } from './auth/index.js';
 
 const app: Application = express();
-const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+const PORT = appConfig.app.port;
 
 app.disable('x-powered-by');
 app.use(json());

@@ -1,0 +1,7 @@
+{
+	"github": {
+		"token_api":  "GITHUB_SECRET_API",
+		"token_validation": "GITHUB_SECRET_VALIDATION",
+		"owner": "GITHUB_OWNER"
+	}
+}

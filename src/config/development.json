@@ -1,0 +1,9 @@
+{
+	"app": {
+		"name": "dev-ops-webhooks-dev",
+		"api_version": "v1",
+		"server": {
+			"port": 3000
+		}
+	}
+}

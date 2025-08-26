@@ -4,9 +4,10 @@ import {
   GitHubApiError,
   sendSuccessResponse
 } from "../utils/index.js";
-import { asyncHandler } from "../utils/helpers.js";
-import type { GitHubWebhookRequest } from "./typesController.js";
-import { octokit } from "../config/index.js";
+import { asyncHandler } from "../utils/index.js";
+import type { GitHubWebhookRequest } from "./types/typesController.js";
+import { octokit } from "../auth/index.js";
+
 
 
 const generatePullRequest = asyncHandler(async (req: Request, res: Response, _: NextFunction) => {
@@ -19,29 +20,31 @@ const generatePullRequest = asyncHandler(async (req: Request, res: Response, _: 
 
   console.log(`Evento recibido: ${event}`);
 
-  // if (event !== 'push') {
-  //   throw new BadRequestError('Evento no soportado. Solo se procesan eventos push.', 'UNSUPPORTED_EVENT');
-  // }
+  if (event !== 'push') {
+    throw new BadRequestError('Evento no soportado. Solo se procesan eventos push.', 'UNSUPPORTED_EVENT');
+  }
 
-  // if (payload.ref !== 'refs/heads/develop') {
-  //   return;
-  // }
+  const branch = /release|develop/gi;
+
+  if (!branch.test(payload.ref)) {
+    console.log(`Evento recibido en rama no soportada: ${payload.ref}`);
+    return;
+  }
 
   const response = await octokit.rest.pulls.create({
-    owner: "Brayan-Camilo-Cristancho",
-    repo: "api-webhooks",
-    title: "✨ Nueva funcionalidad",
-    head: "develop",
-    base: "main", 
-    body: "Este PR agrega una nueva funcionalidad 🚀",
+    owner: payload.repository.owner.name,
+    repo: payload.repository.name,
+    title: ":robot: Pull request generated automatically",
+    head: payload.ref,
+    base: "main",
+    body: `Pull request generado automáticamente desde la rama ${payload.ref} por el webhook de GitHub. Para el commit ${payload.commits[0]?.id}, con la siguiente especificación: ${payload.commits[0]?.message}`,
   });
-  
 
   try {
 
     sendSuccessResponse(res, {
       event,
-      message: 'Webhook recibido y procesado correctamente',
+      message: `Webhook recibido y procesado correctamente se creo el pull request ${response.data.html_url}`,
       repository: payload.repository?.full_name
     });
 

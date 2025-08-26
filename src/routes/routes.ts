@@ -1,20 +1,30 @@
 import type { Application, Request, Response } from 'express';
 import { json } from 'express';
 import { verifySignature } from '../middlewares/index.js';
-import { generatePullRequest } from '../controllers/index.js';
+import { generatePullRequest, getRolesAndUsers } from '../controllers/index.js';
+import { appConfig } from '../config/index.js';
+
 
 export function setRoutes(app: Application) {
-    app.get('/', (req: Request, res: Response) => {
+    const appName: string = appConfig.app.name;
+    const apiVersion: string = appConfig.app.apiVersion;
+
+    const basePath = `/${appName}/${apiVersion}`;
+
+    app.get(`${basePath}/`, (req: Request, res: Response) => {
         res.json({ message: 'API funcionando con TypeScript' });
     });
 
-    app.get('/test-worker', (req: Request, res: Response) => {
+    app.get(`${basePath}/test-worker`, (req: Request, res: Response) => {
         res.json({ message: 'API funcionando con TypeScript' });
     });
 
-   app.post(
-        "/webhooks/github",
+    app.post(
+        `${basePath}/webhooks/github`,
         json({ verify: verifySignature }),
         generatePullRequest
     );
-}2
+
+    app.get(`${basePath}/roles`, getRolesAndUsers);
+
+}
