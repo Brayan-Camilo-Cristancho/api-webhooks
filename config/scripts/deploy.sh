@@ -32,14 +32,14 @@ fi
 
 source ~/.bashrc
 
-echo GITHUB_SECRET_VALIDATION_DEV
+echo $GITHUB_SECRET_VALIDATION_DEV
 
 docker run -d --name ${NAME_APP} \
   -p 80:3000 \
-  -e GITHUB_SECRET_VALIDATION_DEV \
-  -e GITHUB_SECRET_API_DEV \
-  -e GITHUB_OWNER_DEV \
-  -e NODE_ENV=production \
+  -e $GITHUB_SECRET_VALIDATION_DEV \
+  -e $GITHUB_SECRET_API_DEV \
+  -e $GITHUB_OWNER_DEV \
+  -e $NODE_ENV=production \
   ${DOCKER_USER}/${NAME_APP}:${TAG}
 
 
