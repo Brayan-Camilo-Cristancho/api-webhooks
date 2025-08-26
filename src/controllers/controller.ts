@@ -5,8 +5,8 @@ import {
   sendSuccessResponse
 } from "../utils/index.js";
 import { asyncHandler } from "../utils/index.js";
-import type { GitHubWebhookRequest } from "./types/typesController.js";
 import { octokit } from "../auth/index.js";
+import type { GitHubWebhookRequest } from "../types/index.js"
 
 
 
