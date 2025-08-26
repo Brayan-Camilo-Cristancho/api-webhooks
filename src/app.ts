@@ -24,6 +24,7 @@ try {
   app.listen(PORT, "0.0.0.0", () => {
     console.log(` Server is running on http://0.0.0.0:${PORT}`);
   });
+  
 } catch (error) {
   console.error("Error al inicializar la app:", error);
   process.exit(1);
