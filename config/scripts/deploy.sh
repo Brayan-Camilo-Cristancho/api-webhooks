@@ -32,6 +32,8 @@ fi
 
 source ~/.bashrc
 
+echo GITHUB_SECRET_VALIDATION_DEV
+
 docker run -d --name ${NAME_APP} \
   -p 80:3000 \
   -e GITHUB_SECRET_VALIDATION_DEV \
