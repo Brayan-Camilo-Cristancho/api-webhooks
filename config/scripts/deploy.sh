@@ -34,10 +34,11 @@ source ~/.bashrc
 
 docker run -d --name ${NAME_APP} \
   -p 80:3000 \
-  -e GITHUB_SECRET_VALIDATION_DEV="$GITHUB_SECRET_VALIDATION_DEV" \
-  -e GITHUB_SECRET_API_DEV="$GITHUB_SECRET_API_DEV" \
-  -e GITHUB_OWNER_DEV="$GITHUB_OWNER_DEV" \
+  -e GITHUB_SECRET_VALIDATION_DEV \
+  -e GITHUB_SECRET_API_DEV \
+  -e GITHUB_OWNER_DEV \
   -e NODE_ENV=production \
   ${DOCKER_USER}/${NAME_APP}:${TAG}
+
 
 echo "Despliegue finalizado"
