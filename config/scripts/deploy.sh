@@ -2,11 +2,10 @@
 
 set -euo pipefail
 
-echo "🔑 Conectado a $(hostname)"
+echo "Conectado a $(hostname)"
 
-# instalar docker si no existe
 if ! command -v docker >/dev/null 2>&1; then
-    echo "⚙ Instalando Docker..."
+    echo "Instalando Docker..."
     sudo apt-get update -y
     sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
     sudo install -m 0755 -d /etc/apt/keyrings
@@ -17,20 +16,26 @@ if ! command -v docker >/dev/null 2>&1; then
     sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 fi
 
-echo "✔ Docker instalado: $(docker --version)"
+echo "Docker instalado: $(docker --version)"
 
-echo "🔐 Logueando en Docker Hub..."
+echo "Logueando en Docker Hub..."
 echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
 
-echo "🚀 Desplegando ${NAME_APP}:${TAG}..."
+echo "Desplegando ${NAME_APP}:${TAG}..."
 docker pull ${DOCKER_USER}/${NAME_APP}:${TAG}
 
 if [ $(docker ps -a -q -f name=${NAME_APP}) ]; then
-    echo "🛑 Deteniendo y eliminando contenedor existente..."
+    echo "Deteniendo y eliminando contenedor existente..."
     docker stop ${NAME_APP} || true
     docker rm ${NAME_APP} || true
 fi
 
-docker run -d --name ${NAME_APP} -p 80:3000 ${DOCKER_USER}/${NAME_APP}:${TAG}
+docker run -d --name ${NAME_APP} \
+  -p 80:3000 \
+  -e GITHUB_SECRET_VALIDATION_DEV="$GITHUB_SECRET_VALIDATION_DEV" \
+  -e GITHUB_SECRET_API_DEV="$GITHUB_SECRET_API_DEV" \
+  -e GITHUB_OWNER_DEV="$GITHUB_OWNER_DEV" \
+  -e NODE_ENV=production \
+  ${DOCKER_USER}/${NAME_APP}:${TAG}
 
-echo "✅ Despliegue finalizado"
+echo "Despliegue finalizado"
