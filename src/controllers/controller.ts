@@ -76,6 +76,12 @@ const validateChangesFolderConfig = asyncHandler(async (req: Request, res: Respo
 
   console.log(`Commits recibidos: ${commits.length}`);
 
+  console.log(commits);
+
+  console.log('-----------------------------');
+  
+  console.log(repository)
+
   sendSuccessResponse(res, {
     event,
     message: `Webhook recibido y procesado correctamente`,
