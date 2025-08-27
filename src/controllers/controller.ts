@@ -57,4 +57,32 @@ const generatePullRequest = asyncHandler(async (req: Request, res: Response, _: 
   }
 });
 
-export { generatePullRequest }
+
+const validateChangesFolderConfig = asyncHandler(async (req: Request, res: Response, _: NextFunction) => {
+
+  const webhookReq = req as GitHubWebhookRequest;
+
+  const event = webhookReq.headers["x-github-event"];
+
+  const payload = webhookReq.body;
+
+  console.log(`Evento recibido: ${event}`);
+
+  if (event !== 'push') {
+    throw new BadRequestError('Evento no soportado. Solo se procesan eventos push.', 'UNSUPPORTED_EVENT');
+  }
+
+  const { commits, repository } = payload;
+
+  console.log(`Commits recibidos: ${commits.length}`);
+
+  sendSuccessResponse(res, {
+    event,
+    message: `Webhook recibido y procesado correctamente`,
+    repository: payload.repository?.full_name
+  });
+
+});
+
+
+export { generatePullRequest, validateChangesFolderConfig }

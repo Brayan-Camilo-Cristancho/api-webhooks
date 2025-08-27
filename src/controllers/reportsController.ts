@@ -2,7 +2,6 @@ import type { Request, Response, NextFunction } from "express";
 import { asyncHandler, sendSuccessResponse } from "../utils/index.js";
 import { githubService } from "../services/index.js";
 import type { InfoRepositories, InfoUsers } from "../types/index.js";
-import * as XLSX from "xlsx";
 import * as path from "path";
 import * as fs from "fs";
 import { fileURLToPath } from "url";
@@ -66,27 +65,19 @@ export const getRolesAndUsers = asyncHandler(async (_req: Request, res: Response
 			.map(([_, user]) => user),
 	];
 
-	const worksheet = XLSX.utils.json_to_sheet(combinedList.map(u => ({
-		Usuario: u.user_or_team,
-		Rol: u.role,
-		Branch: u.branch,
-		Repositorios: Array.isArray(u.repo) ? u.repo.join(", ") : "",
-	})));
-
-	const workbook = XLSX.utils.book_new();
-	XLSX.utils.book_append_sheet(workbook, worksheet, "Roles_Usuarios");
-
 	const folderPath = path.join(__dirname, "..", "exports");
-	const filePath = path.join(folderPath, "roles_usuarios.xlsx");
-
 	if (!fs.existsSync(folderPath)) {
 		fs.mkdirSync(folderPath, { recursive: true });
 	}
 
-	XLSX.writeFile(workbook, filePath);
+	const jsonPath = path.join(folderPath, "roles_usuarios.json");
+
+	fs.writeFileSync(jsonPath, JSON.stringify(combinedList, null, 2), "utf-8");
 
 	sendSuccessResponse(res, {
-		message: `Roles y usuarios obtenidos correctamente. Archivo guardado en: ${filePath}`,
+		message: `Roles y usuarios obtenidos correctamente. Archivos guardados en: ${folderPath}`,
+		jsonFile: jsonPath,
 		users: combinedList,
 	});
 });
+

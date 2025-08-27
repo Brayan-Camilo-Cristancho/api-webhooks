@@ -28,7 +28,7 @@ pipeline {
             steps {
                 script {
                     def buildDate = sh(script: "date +%Y%m%d", returnStdout: true).trim()
-                    def tag = "${buildDate}-${env.BUILD_NUMBER}"
+                    def tag = "${buildDate}-${env.BUILD_NUMBER}-dev"
                     def fullImage = "${env.DOCKER_USER}/${nameImage}:${tag}"
 
                     sh """

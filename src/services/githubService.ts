@@ -6,30 +6,12 @@ import { safeAsync } from "../utils/index.js";
 
 
 const getInfoRepositories = safeAsync(async (): Promise<InfoRepositories[]> => {
+	const data = await octokit.paginate(
+		octokit.rest.repos.listForOrg,
+		{ org: appConfig.app.GitHubOwner, per_page: 100 }
+	);
 
-	const repositories: GitHubRepo[] = [];
-
-	let page = 1;
-
-	const perPage = 100;
-
-	while (true) {
-
-		const { data } = await octokit.rest.repos.listForOrg({
-			org: appConfig.app.GitHubOwner,
-			per_page: perPage,
-			page
-		});
-
-		repositories.push(...data);
-
-		if (data.length < perPage) break;
-
-		page++;
-
-	}
-
-	return repositories.map(({ name, full_name, private: isPrivate, html_url, updated_at, forks_count, created_at }) => ({
+	return data.map(({ name, full_name, private: isPrivate, html_url, updated_at, forks_count, created_at }) => ({
 		name,
 		full_name,
 		private: isPrivate,
@@ -38,7 +20,6 @@ const getInfoRepositories = safeAsync(async (): Promise<InfoRepositories[]> => {
 		forks_count: forks_count ?? 0,
 		created_at: created_at ?? ""
 	}));
-
 });
 
 
