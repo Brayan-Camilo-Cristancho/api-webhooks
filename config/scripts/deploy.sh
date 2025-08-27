@@ -34,7 +34,7 @@ if [ $(docker ps -a -q -f name=${NAME_APP}) ]; then
     docker rm ${NAME_APP} || true
 fi
 
-echo "GITHUB_SECRET_VALIDATION=$GITHUB_SECRET_VALIDATION"
+
 echo "GITHUB_SECRET_API=$GITHUB_SECRET_API"
 echo "GITHUB_OWNER=$GITHUB_OWNER"
 echo "NODE_ENV=$NODE_ENV"
