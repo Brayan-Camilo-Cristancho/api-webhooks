@@ -48,6 +48,12 @@ const environments = {
 		},
 	},
 	production: {
+		app: {
+			name: 'dev-ops-webhooks-prod',
+			server: {
+				port: 3000,
+			},
+		},
 		github: {
 			token_api: process.env.GITHUB_SECRET_API || '',
 			token_validation: process.env.GITHUB_SECRET_VALIDATION || '',
