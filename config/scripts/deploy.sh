@@ -2,10 +2,6 @@
 
 set -euo pipefail
 
-if [ -f ~/.bashrc ]; then
-    source ~/.bashrc
-fi
-
 echo "Conectado a $(hostname)"
 
 if ! command -v docker >/dev/null 2>&1; then
@@ -34,10 +30,15 @@ if [ $(docker ps -a -q -f name=${NAME_APP}) ]; then
     docker rm ${NAME_APP} || true
 fi
 
+source ~/.bashrc
 
-echo "GITHUB_SECRET_API=$GITHUB_SECRET_API"
-echo "GITHUB_OWNER=$GITHUB_OWNER"
-echo "NODE_ENV=$NODE_ENV"
+docker run -d --name ${NAME_APP} \
+  -p 80:3000 \
+  -e GITHUB_SECRET_VALIDATION="$GITHUB_SECRET_VALIDATION" \
+  -e GITHUB_SECRET_API="$GITHUB_SECRET_API" \
+  -e GITHUB_OWNER="$GITHUB_OWNER" \
+  -e NODE_ENV="$NODE_ENV" \
+  ${DOCKER_USER}/${NAME_APP}:${TAG}
 
 
 echo "Despliegue finalizado"
