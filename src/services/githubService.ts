@@ -11,7 +11,7 @@ const getInfoRepositories = safeAsync(async (): Promise<InfoRepositories[]> => {
 
 	let page = 1;
 
-	const perPage = 200;
+	const perPage = 100;
 
 	while (true) {
 
@@ -45,7 +45,7 @@ const getInfoRepositories = safeAsync(async (): Promise<InfoRepositories[]> => {
 
 const getBranchProtection = async (repo: string, branch: string): Promise<InfoBranchProtection | null> => {
 	try {
-		
+
 		const res = await octokit.rest.repos.getBranchProtection({
 			owner: appConfig.app.GitHubOwner,
 			repo,
@@ -72,9 +72,11 @@ const getBranchProtection = async (repo: string, branch: string): Promise<InfoBr
 
 const getMembershipUsers = safeAsync(async (): Promise<InfoUsers[]> => {
 
-	const users = (await octokit.rest.orgs.listMembers({
-		org: appConfig.app.GitHubOwner,
-	})).data.map(u => u.login);
+	const users = await octokit.paginate(
+		octokit.rest.orgs.listMembers,
+		{ org: appConfig.app.GitHubOwner, per_page: 100 },
+		(response) => response.data.map(u => u.login)
+	);
 
 	const res = await Promise.all(
 		users.map(async (login) => {
