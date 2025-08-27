@@ -34,12 +34,10 @@ if [ $(docker ps -a -q -f name=${NAME_APP}) ]; then
     docker rm ${NAME_APP} || true
 fi
 
-docker run -d --name ${NAME_APP} \
-  -p 80:3000 \
-  -e GITHUB_SECRET_VALIDATION="$GITHUB_SECRET_VALIDATION" \
-  -e GITHUB_SECRET_API="$GITHUB_SECRET_API" \
-  -e GITHUB_OWNER="$GITHUB_OWNER" \
-  -e NODE_ENV="$NODE_ENV" \
-  ${DOCKER_USER}/${NAME_APP}:${TAG}
+echo "GITHUB_SECRET_VALIDATION=$GITHUB_SECRET_VALIDATION"
+echo "GITHUB_SECRET_API=$GITHUB_SECRET_API"
+echo "GITHUB_OWNER=$GITHUB_OWNER"
+echo "NODE_ENV=$NODE_ENV"
+
 
 echo "Despliegue finalizado"
