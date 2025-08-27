@@ -60,35 +60,48 @@ const generatePullRequest = asyncHandler(async (req: Request, res: Response, _: 
 
 const validateChangesFolderConfig = asyncHandler(async (req: Request, res: Response, _: NextFunction) => {
 
-  const webhookReq = req as GitHubWebhookRequest;
+  const event = req.headers["x-github-event"];
 
-  const event = webhookReq.headers["x-github-event"];
-
-  const payload = webhookReq.body;
+  const payload = req.body;
 
   console.log(`Evento recibido: ${event}`);
 
-  if (event !== 'push') {
-    throw new BadRequestError('Evento no soportado. Solo se procesan eventos push.', 'UNSUPPORTED_EVENT');
+  if (event !== "push") {
+    throw new BadRequestError("Evento no soportado. Solo se procesan eventos push.", "UNSUPPORTED_EVENT");
   }
 
   const { commits, repository } = payload;
 
   console.log(`Commits recibidos: ${commits.length}`);
 
-  console.log(commits);
+  let alertMessages: string[] = [];
 
-  console.log('-----------------------------');
-  
-  console.log(repository)
+  commits.map((c: any) => {
+    const protectedFiles = c.modified.filter((f: string) => f.startsWith("config/Jenkinsfile"));
+
+    if (protectedFiles.length > 0) {
+      const message = `⚠️ Carpeta protegida modificada en el repositorio **${repository.full_name}** por **${c.author.username}**
+      📄 Archivos: ${protectedFiles.join(", ")}
+      📝 Commit: ${c.url}
+      🗒️ Mensaje: "${c.message}"`;
+
+      alertMessages.push(message);
+    }
+
+  });
+
+  if (alertMessages.length > 0) {
+    console.log("Alertas detectadas:");
+    alertMessages.forEach(msg => console.log(msg));
+
+  }
 
   sendSuccessResponse(res, {
     event,
-    message: `Webhook recibido y procesado correctamente`,
-    repository: payload.repository?.full_name
+    message: "Webhook recibido y procesado correctamente",
+    repository: repository.full_name,
+    alerts: alertMessages.length
   });
-
 });
-
 
 export { generatePullRequest, validateChangesFolderConfig }
