@@ -1,7 +1,7 @@
 import type { Application, Request, Response } from 'express';
 import { json } from 'express';
 import { verifySignature } from '../middlewares/index.js';
-import { generatePullRequest, getRolesAndUsers, validateChangesFolderConfig } from '../controllers/index.js';
+import { generatePullRequest, getRolesAndUsers, reportChangesFolderConfig } from '../controllers/index.js';
 import { appConfig } from '../config/index.js';
 
 
@@ -28,7 +28,7 @@ export function setRoutes(app: Application) {
     app.post(
         `${basePath}/webhooks/github/validate`,
         json({ verify: verifySignature }),
-        validateChangesFolderConfig
+        reportChangesFolderConfig
     );
 
     app.get(`${basePath}/roles`, getRolesAndUsers);
