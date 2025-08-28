@@ -28,7 +28,7 @@ const baseConfig = {
 		name: 'dev-ops-webhooks',
 		apiVersion: 'v1',
 		server: {
-			port: 8080,
+			port: 3000,
 		},
 	},
 };
@@ -36,10 +36,7 @@ const baseConfig = {
 const environments = {
 	development: {
 		app: {
-			name: 'dev-ops-webhooks-dev',
-			server: {
-				port: 3000,
-			},
+			name: 'dev-ops-webhooks-dev'
 		},
 		github: {
 			token_api: process.env.GITHUB_SECRET_API_DEV || '',
@@ -49,10 +46,7 @@ const environments = {
 	},
 	production: {
 		app: {
-			name: 'dev-ops-webhooks-prod',
-			server: {
-				port: 3000,
-			},
+			name: 'dev-ops-webhooks-prod'
 		},
 		github: {
 			token_api: process.env.GITHUB_SECRET_API || '',

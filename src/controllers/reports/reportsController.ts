@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
-import { asyncHandler, sendSuccessResponse } from "../utils/index.js";
-import { githubService } from "../services/index.js";
-import type { InfoRepositories, InfoUsers } from "../types/index.js";
+import { asyncHandler, sendSuccessResponse } from "../../utils/index.js";
+import { githubService } from "../../services/index.js";
+import type { InfoRepositories, InfoUsers } from "../../types/index.js";
 import * as path from "path";
 import * as fs from "fs";
 import { fileURLToPath } from "url";

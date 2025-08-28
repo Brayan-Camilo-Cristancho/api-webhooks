@@ -1,11 +1,12 @@
 
 import { octokit } from "../auth/index.js";
 import { appConfig } from "../config/index.js";
-import type { GitHubRepo, InfoBranchProtection, InfoRepositories, InfoUsers, Role } from "../types/index.js";
+import type { InfoBranchProtection, InfoRepositories, InfoUsers, Role } from "../types/index.js";
 import { safeAsync } from "../utils/index.js";
 
 
 const getInfoRepositories = safeAsync(async (): Promise<InfoRepositories[]> => {
+
 	const data = await octokit.paginate(
 		octokit.rest.repos.listForOrg,
 		{ org: appConfig.app.GitHubOwner, per_page: 100 }
@@ -20,9 +21,8 @@ const getInfoRepositories = safeAsync(async (): Promise<InfoRepositories[]> => {
 		forks_count: forks_count ?? 0,
 		created_at: created_at ?? ""
 	}));
+
 });
-
-
 
 const getBranchProtection = async (repo: string, branch: string): Promise<InfoBranchProtection | null> => {
 	try {
@@ -79,8 +79,10 @@ const getMembershipUsers = safeAsync(async (): Promise<InfoUsers[]> => {
 });
 
 const listBranches = safeAsync(async (owner: string, repo: string) => {
+
 	const res = await octokit.rest.repos.listBranches({ owner, repo });
 	return res.data.map(branch => ({ name: branch.name, protected: branch.protected }));
+	
 });
 
 export const githubService = { getInfoRepositories, getBranchProtection, listBranches, getMembershipUsers };
