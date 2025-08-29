@@ -1,4 +1,4 @@
-import type { ReportGitHubEventType } from '../../types/github-webhooks.js';
+import type { ReportGitHubEventType } from '../../types/index.js';
 import {
   SecurityWebhookService,
   TeamWebhookService,
@@ -34,6 +34,8 @@ export class WebhookServiceFactory {
         return this.repositoryService;
       case 'personal_access_token_request':
         return this.tokenService;
+      case 'push':
+        return this.repositoryService;
       default:
         throw new Error(`No hay servicio configurado para el evento: ${eventType}`);
     }

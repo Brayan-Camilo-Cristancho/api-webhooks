@@ -14,8 +14,8 @@ export function setRoutes(app: Application) {
 		res.json({ message: 'API funcionando con TypeScript' });
 	});
 
-	app.use(`${basePath}/webhooks/github/`, routerWebhooks);
-	app.use(`${basePath}/api/`, routerApi)
+	app.use(`${basePath}/webhooks/github`, routerWebhooks);
+	app.use(`${basePath}/api`, routerApi)
 
 }
 	

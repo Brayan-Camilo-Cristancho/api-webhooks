@@ -82,8 +82,49 @@ const listBranches = safeAsync(async (owner: string, repo: string) => {
 
 	const res = await octokit.rest.repos.listBranches({ owner, repo });
 	return res.data.map(branch => ({ name: branch.name, protected: branch.protected }));
-	
+
 });
 
-export const githubService = { getInfoRepositories, getBranchProtection, listBranches, getMembershipUsers };
+const getDataUser = safeAsync(async (username: string) => {
+
+	const { data: user } = await octokit.rest.users.getByUsername({
+		username: username,
+	});
+
+	return user;
+
+});
+
+const createPullRequest = safeAsync(async (data) => {
+
+	const res = await octokit.rest.pulls.create({
+		owner: appConfig.app.GitHubOwner,
+		repo: data.repository.name,
+		title: ":robot: Pull request generated automatically",
+		head: data.ref,
+		base: "main",
+		body: `Pull request generado automáticamente desde la rama ${data.ref} por el webhook de GitHub. Para el commit ${data.commits[0]?.id}, con la siguiente especificación: ${data.commits[0]?.message}`,
+	});
+
+	return res;
+
+});
+
+const commitExists = safeAsync(async (repo: string, commitSha: string) => {
+	try {
+		await octokit.rest.repos.getCommit({
+			owner: appConfig.app.GitHubOwner,
+			repo,
+			ref: commitSha
+		});
+		return true;
+	} catch (error: any) {
+		if (error.status === 404) {
+			return false;
+		}
+		throw error;
+	}
+});
+
+export const githubService = { getInfoRepositories, getBranchProtection, listBranches, getMembershipUsers, getDataUser, createPullRequest, commitExists };
 

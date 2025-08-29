@@ -1,7 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import { AppError } from '../utils/errors/errors.js';
-import { sendErrorResponse } from '../utils/response.js';
-
+import { AppError, sendErrorResponse } from '../utils/index.js';
 
 export const errorHandler = (
   err: Error | AppError,
@@ -25,8 +23,8 @@ export const errorHandler = (
   sendErrorResponse(
     res,
     'INTERNAL_SERVER_ERROR',
-    process.env.NODE_ENV === 'production' 
-      ? 'Ha ocurrido un error interno' 
+    process.env.NODE_ENV === 'production'
+      ? 'Ha ocurrido un error interno'
       : err.message || 'Error interno del servidor',
     500
   );
@@ -34,8 +32,8 @@ export const errorHandler = (
 
 export const notFoundHandler = (req: Request, res: Response): void => {
   sendErrorResponse(
-    res, 
-    'NOT_FOUND', 
+    res,
+    'NOT_FOUND',
     `Ruta no encontrada: ${req.method} ${req.originalUrl}`,
     404
   );

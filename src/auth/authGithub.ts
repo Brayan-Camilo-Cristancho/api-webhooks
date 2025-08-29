@@ -2,7 +2,6 @@ import { Octokit } from "octokit";
 import { GitHubApiError } from "../utils/index.js";
 import { appConfig } from "../config/index.js";
 
-console.log('GITHUB_SECRET_API:', appConfig.app.GitHubTokenApi);
 const octokit = new Octokit({ auth: appConfig.app.GitHubTokenApi });
 
 const authApi = async () => {

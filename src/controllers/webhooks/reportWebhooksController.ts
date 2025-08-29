@@ -1,7 +1,6 @@
-import { asyncHandler } from "../../utils/helpers.js";
 import type { NextFunction, Request, Response } from "express";
-import { BadRequestError, sendSuccessResponse } from "../../utils/index.js";
-import { WebhookServiceFactory } from "../../services/webhooks/webhook-factory.js";
+import { BadRequestError, sendSuccessResponse, asyncHandler } from "../../utils/index.js";
+import { WebhookServiceFactory } from "../../services/index.js";
 import type {
 	ReportGitHubEventType,
 	DeleteEventPayload,
@@ -10,7 +9,7 @@ import type {
 	MembershipEventPayload,
 	RepositoryEventPayload,
 	PersonalAccessTokenRequestEventPayload
-} from "../../types/github-webhooks.js";
+} from "../../types/index.js";
 
 
 const reportDeleteImportantBranch = asyncHandler(async (req: Request, res: Response, _: NextFunction) => {
@@ -124,7 +123,7 @@ const reportPrivateRepoRemoved = asyncHandler(async (req: Request, res: Response
 	if (result) {
 		sendSuccessResponse(res, result);
 	}
-	
+
 });
 
 const reportPersonalAccessTokenRequest = asyncHandler(async (req: Request, res: Response, _: NextFunction) => {
@@ -144,7 +143,7 @@ const reportPersonalAccessTokenRequest = asyncHandler(async (req: Request, res: 
 	const result = tokenService.monitorPersonalAccessTokenRequests(payload);
 
 	sendSuccessResponse(res, result);
-	
+
 });
 
 export {

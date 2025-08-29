@@ -1,6 +1,6 @@
 import type { Request } from 'express';
 
-export type ReportGitHubEventType = 
+export type ReportGitHubEventType =
   | 'delete'
   | 'branch_protection_rule'
   | 'bypass_request_push_ruleset'
@@ -9,11 +9,31 @@ export type ReportGitHubEventType =
   | 'personal_access_token_request'
   | string;
 
-export interface ReportGitHubWebhookRequest<T = any> extends Request {
-  body: T;
+export interface ReportGitHubWebhookRequest extends Request {
+  body: any;
   headers: Request['headers'] & {
     'x-github-event': ReportGitHubEventType;
   };
+}
+
+export interface GitHubPushEvent {
+  ref: string;
+  repository: {
+    name: string;
+    full_name: string;
+    owner: {
+      login: string;
+      name: string;
+    };
+  };
+  commits: Array<{
+    id: string;
+    message: string;
+    author: {
+      name: string;
+      email: string;
+    };
+  }>;
 }
 
 export interface DeleteEventPayload {
@@ -70,6 +90,18 @@ export interface MembershipEventPayload {
 }
 
 export interface RepositoryEventPayload {
+  before?: string;
+  after?: string;
+  commits: {
+    id: string;
+    message: string;
+    author: {
+      name: string;
+      email: string;
+      username?: string
+    };
+  }[];
+  ref?: string;
   action: 'created' | 'deleted' | string;
   repository: {
     full_name: string;
@@ -80,8 +112,13 @@ export interface RepositoryEventPayload {
   organization?: {
     login: string;
   };
+  pusher?: {
+    name: string;
+    email: string
+  }
   sender?: {
     login: string;
+    id: number;
   };
 }
 
