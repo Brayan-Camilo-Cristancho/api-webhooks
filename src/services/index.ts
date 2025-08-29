@@ -1,3 +1,3 @@
 export * from './githubService.js';
-export * from './webhooks/webhook-services.js';
-export * from './webhooks/webhook-factory.js';
+export * from './webhooks/webhookServices.js';
+export * from './webhooks/webhookFactory.js';

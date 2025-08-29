@@ -6,6 +6,7 @@ import {
 } from "../../utils/index.js";
 import type { GitHubPushEvent, ReportGitHubEventType } from "../../types/index.js"
 import { WebhookServiceFactory } from "../../services/index.js";
+import { sendToTeams } from "../../services/comunicationService.js";
 
 const changesGeneratePullRequest = asyncHandler(async (req: Request, res: Response, _: NextFunction) => {
 
@@ -24,6 +25,7 @@ const changesGeneratePullRequest = asyncHandler(async (req: Request, res: Respon
   const result = await securityService.generatePullRequest(payload);
 
   if (result) {
+    sendToTeams(result);
     sendSuccessResponse(res, result);
   }
 
@@ -52,6 +54,7 @@ const validateChangesFolderConfig = asyncHandler(async (req: Request, res: Respo
   const result = await securityService.changesFolderConfig(payload);
 
   if (result) {
+    sendToTeams(result);
     sendSuccessResponse(res, result);
   }
 
@@ -72,6 +75,7 @@ const validateChangesPushUser = asyncHandler(async (req: Request, res: Response,
   const result = await securityService.monitorPushUser(payload);
 
   if (result) {
+    sendToTeams(result);
     sendSuccessResponse(res, result);
   }
 
@@ -92,6 +96,7 @@ const validateForcePush = asyncHandler(async (req: Request, res: Response, _: Ne
   const result = await securityService.forcePush(payload);
 
   if (result) {
+    sendToTeams(result);
     sendSuccessResponse(res, result);
   }
 

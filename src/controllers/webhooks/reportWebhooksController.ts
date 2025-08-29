@@ -10,6 +10,7 @@ import type {
 	RepositoryEventPayload,
 	PersonalAccessTokenRequestEventPayload
 } from "../../types/index.js";
+import { sendToTeams } from "../../services/comunicationService.js";
 
 
 const reportDeleteImportantBranch = asyncHandler(async (req: Request, res: Response, _: NextFunction) => {
@@ -33,6 +34,7 @@ const reportDeleteImportantBranch = asyncHandler(async (req: Request, res: Respo
 	const result = securityService.validateDeletedBranch(payload);
 
 	if (result) {
+		sendToTeams(result);
 		sendSuccessResponse(res, result);
 	}
 
@@ -55,6 +57,7 @@ const reportDeleteProtectionBranch = asyncHandler(async (req: Request, res: Resp
 	const result = securityService.validateBranchProtectionRemoval(payload);
 
 	if (result) {
+		sendToTeams(result);
 		sendSuccessResponse(res, result);
 	}
 
@@ -76,7 +79,10 @@ const reportBypassPushRuleset = asyncHandler(async (req: Request, res: Response,
 
 	const result = securityService.monitorBypassPushRuleset(payload);
 
-	sendSuccessResponse(res, result);
+	if (result) {
+		sendToTeams(result);
+		sendSuccessResponse(res, result);
+	}
 });
 
 const reportMembershipChange = asyncHandler(async (req: Request, res: Response, _: NextFunction) => {
@@ -96,6 +102,7 @@ const reportMembershipChange = asyncHandler(async (req: Request, res: Response, 
 	const result = teamService.monitorMembershipChanges(payload);
 
 	if (result) {
+		sendToTeams(result);
 		sendSuccessResponse(res, result);
 	}
 });
@@ -121,6 +128,7 @@ const reportPrivateRepoRemoved = asyncHandler(async (req: Request, res: Response
 	const result = repoService.monitorPrivateRepositoryRemoved(payload);
 
 	if (result) {
+		sendToTeams(result);
 		sendSuccessResponse(res, result);
 	}
 
@@ -142,7 +150,10 @@ const reportPersonalAccessTokenRequest = asyncHandler(async (req: Request, res: 
 
 	const result = tokenService.monitorPersonalAccessTokenRequests(payload);
 
-	sendSuccessResponse(res, result);
+	if (result) {
+		sendToTeams(result);
+		sendSuccessResponse(res, result);
+	}
 
 });
 

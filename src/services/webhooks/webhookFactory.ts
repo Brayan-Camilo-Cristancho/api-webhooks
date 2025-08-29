@@ -4,7 +4,7 @@ import {
   TeamWebhookService,
   RepositoryWebhookService,
   TokenWebhookService
-} from './webhook-services.js';
+} from './webhookServices.js';
 
 
 export class WebhookServiceFactory {

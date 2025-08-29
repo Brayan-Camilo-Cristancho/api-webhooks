@@ -43,6 +43,9 @@ const environments = {
 			token_validation: process.env.GITHUB_SECRET_VALIDATION_DEV || '',
 			owner: process.env.GITHUB_OWNER_DEV || '',
 		},
+		comunication: {
+			teams: process.env.WEBHOOK_URL_CHANNEL_DEV || ''
+		}
 	},
 	production: {
 		app: {
