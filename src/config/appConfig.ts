@@ -1,7 +1,7 @@
 
 
+import type { AppConfig } from '../core/index.js';
 import config from './environmentsConfig.js';
-import type { AppConfig } from './types/config.js';
 
 const appConfig: AppConfig = {
 	app: {

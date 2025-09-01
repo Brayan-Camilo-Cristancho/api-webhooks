@@ -1,4 +1,6 @@
-import type { ReportGitHubEventType } from '../../types/index.js';
+
+
+import type { ReportGitHubEventType } from '../../core/index.js';
 import {
   SecurityWebhookService,
   TeamWebhookService,
@@ -6,38 +8,26 @@ import {
   TokenWebhookService
 } from './webhookServices.js';
 
-
 export class WebhookServiceFactory {
 
-  private static securityService: SecurityWebhookService;
-  private static teamService: TeamWebhookService;
-  private static repositoryService: RepositoryWebhookService;
-  private static tokenService: TokenWebhookService;
+  private static securityService?: SecurityWebhookService;
+  private static teamService?: TeamWebhookService;
+  private static repositoryService?: RepositoryWebhookService;
+  private static tokenService?: TokenWebhookService;
+
+  private static readonly serviceMap: Record<ReportGitHubEventType, () => any> = {
+    delete: () => (this.securityService ??= new SecurityWebhookService()),
+    branch_protection_rule: () => (this.securityService ??= new SecurityWebhookService()),
+    bypass_request_push_ruleset: () => (this.securityService ??= new SecurityWebhookService()),
+    membership: () => (this.teamService ??= new TeamWebhookService()),
+    repository: () => (this.repositoryService ??= new RepositoryWebhookService()),
+    personal_access_token_request: () => (this.tokenService ??= new TokenWebhookService()),
+    push: () => (this.repositoryService ??= new RepositoryWebhookService()),
+  };
 
   static getServiceForEventType(eventType: ReportGitHubEventType): any {
-
-    if (!this.securityService) {
-      this.securityService = new SecurityWebhookService();
-      this.teamService = new TeamWebhookService();
-      this.repositoryService = new RepositoryWebhookService();
-      this.tokenService = new TokenWebhookService();
-    }
-
-    switch (eventType) {
-      case 'delete':
-      case 'branch_protection_rule':
-      case 'bypass_request_push_ruleset':
-        return this.securityService;
-      case 'membership':
-        return this.teamService;
-      case 'repository':
-        return this.repositoryService;
-      case 'personal_access_token_request':
-        return this.tokenService;
-      case 'push':
-        return this.repositoryService;
-      default:
-        throw new Error(`No hay servicio configurado para el evento: ${eventType}`);
-    }
+    const service = this.serviceMap[eventType];
+    if (!service) throw new Error(`No hay servicio configurado para el evento: ${eventType}`);
+    return service();
   }
 }

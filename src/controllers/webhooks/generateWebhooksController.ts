@@ -4,9 +4,9 @@ import {
   sendSuccessResponse,
   asyncHandler
 } from "../../utils/index.js";
-import type { GitHubPushEvent, ReportGitHubEventType } from "../../types/index.js"
 import { WebhookServiceFactory } from "../../services/index.js";
 import { sendToTeams } from "../../services/comunicationService.js";
+import type { GitHubPushEvent, ReportGitHubEventType } from "../../core/index.js";
 
 const changesGeneratePullRequest = asyncHandler(async (req: Request, res: Response, _: NextFunction) => {
 

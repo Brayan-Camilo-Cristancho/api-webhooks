@@ -1,11 +1,11 @@
 
 import { octokit } from "../auth/index.js";
 import { appConfig } from "../config/index.js";
-import type { InfoBranchProtection, InfoRepositories, InfoUsers, Role } from "../types/index.js";
+import type { BranchProtection, ReportRoleUsers, RepositoryData, Role } from "../core/index.js";
 import { safeAsync } from "../utils/index.js";
 
 
-const getInfoRepositories = safeAsync(async (): Promise<InfoRepositories[]> => {
+const getInfoRepositories = safeAsync(async (): Promise<RepositoryData[]> => {
 
 	const data = await octokit.paginate(
 		octokit.rest.repos.listForOrg,
@@ -24,7 +24,7 @@ const getInfoRepositories = safeAsync(async (): Promise<InfoRepositories[]> => {
 
 });
 
-const getBranchProtection = async (repo: string, branch: string): Promise<InfoBranchProtection | null> => {
+const getBranchProtection = async (repo: string, branch: string): Promise<BranchProtection | null> => {
 	try {
 
 		const res = await octokit.rest.repos.getBranchProtection({
@@ -51,7 +51,7 @@ const getBranchProtection = async (repo: string, branch: string): Promise<InfoBr
 	}
 };
 
-const getMembershipUsers = safeAsync(async (): Promise<InfoUsers[]> => {
+const getMembershipUsers = safeAsync(async (): Promise<ReportRoleUsers[]> => {
 
 	const users = await octokit.paginate(
 		octokit.rest.orgs.listMembers,

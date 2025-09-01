@@ -1,6 +1,6 @@
 export type Role = 'admin' | 'member' | 'approver';
 
-export interface InfoUsers {
+export interface ReportRoleUsers {
 	user_or_team: string;
 	repo: Set<string>;
 	branch: string;

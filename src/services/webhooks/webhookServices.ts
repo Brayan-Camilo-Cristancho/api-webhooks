@@ -1,12 +1,4 @@
-import type {
-	DeleteEventPayload,
-	BranchProtectionRuleEventPayload,
-	BypassPushRulesetEventPayload,
-	MembershipEventPayload,
-	RepositoryEventPayload,
-	PersonalAccessTokenRequestEventPayload,
-	AlertResponse
-} from '../../types/index.js';
+import type { AlertResponse, BranchProtectionRuleEventPayload, BypassPushRulesetEventPayload, DeleteEventPayload, MembershipEventPayload, PersonalAccessTokenRequestEventPayload, RepositoryEventPayload } from '../../core/index.js';
 import { githubService } from '../githubService.js';
 
 export class SecurityWebhookService {
@@ -283,7 +275,7 @@ export class RepositoryWebhookService {
 
 export class TokenWebhookService {
 
-	monitorPersonalAccessTokenRequests(payload: PersonalAccessTokenRequestEventPayload): AlertResponse {
+	monitorPersonalAccessTokenRequests(payload: PersonalAccessTokenRequestEventPayload ): AlertResponse {
 
 		const action = payload.action;
 

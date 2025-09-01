@@ -1,0 +1,64 @@
+{
+	"@type": "MessageCard",
+	"@context": "http://schema.org/extensions",
+	"themeColor": "${themeColor}",
+	"summary": "${summary}",
+	"sections": [
+		{
+			"activityTitle": "${title-card}",
+			"activitySubtitle": "${sub-title}",
+			"activityImage": "${image}",
+			"markdown": true
+		},
+		{
+			"startGroup": true,
+			"heroImage": {
+				"image": "${image-alert}"
+			},
+			"title": "**Sistema de Monitoreo GitHub EMU**",
+			"text": "${severidad}",
+			"markdown": true
+		},
+		{
+			"startGroup": true,
+			"title": "**Detalles del Evento**",
+			"facts": [
+				{
+					"name": "Tipo de Evento",
+					"value": "${tipo-evento}"
+				},
+				{
+					"name": "Repositorio",
+					"value": "${repository}"
+				},
+				{
+					"name": "Rama",
+					"value": "${branch}"
+				},
+				{
+					"name": "Fecha y Hora",
+					"value": "${formattedDate}"
+				}
+			],
+			"markdown": true
+		},
+		{
+			"startGroup": true,
+			"title": "**Mensaje de Alerta**",
+			"text": "*Este es un mensaje generado automáticamente.*",
+			"markdown": true
+		}
+	],
+	"potentialAction": [
+		{
+			"@type": "OpenUri",
+			"name": "Organization",
+			"targets": [
+				{
+					"os": "default",
+					"uri": "https://github.com/inteligentSolutionsOrg"
+				}
+			]
+		}
+	]
+}

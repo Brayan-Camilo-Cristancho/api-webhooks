@@ -1,16 +1,8 @@
 import type { NextFunction, Request, Response } from "express";
 import { BadRequestError, sendSuccessResponse, asyncHandler } from "../../utils/index.js";
 import { WebhookServiceFactory } from "../../services/index.js";
-import type {
-	ReportGitHubEventType,
-	DeleteEventPayload,
-	BranchProtectionRuleEventPayload,
-	BypassPushRulesetEventPayload,
-	MembershipEventPayload,
-	RepositoryEventPayload,
-	PersonalAccessTokenRequestEventPayload
-} from "../../types/index.js";
 import { sendToTeams } from "../../services/comunicationService.js";
+import type { BranchProtectionRuleEventPayload, BypassPushRulesetEventPayload, DeleteEventPayload, MembershipEventPayload, PersonalAccessTokenRequestEventPayload, ReportGitHubEventType, RepositoryEventPayload } from "../../core/index.js";
 
 
 const reportDeleteImportantBranch = asyncHandler(async (req: Request, res: Response, _: NextFunction) => {
