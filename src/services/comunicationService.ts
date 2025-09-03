@@ -4,7 +4,7 @@ import cardAlertTemplate from "../templates/cardAlertTeams.json" with { type: "j
 import { fillTemplate, mapSeverityConfig } from "../utils/helpers.js";
 
 
-function createTeamsMessage(data: AlertResponse) {
+const createTeamsMessage = (data: AlertResponse) => {
   const severity = mapSeverityConfig(data.category || "notify");
 
   const replacements: Record<string, string> = {
@@ -24,19 +24,18 @@ function createTeamsMessage(data: AlertResponse) {
     themeColor: severity?.color || '#333',
   };
 
-
   const message = fillTemplate(cardAlertTemplate, replacements);
 
   message.potentialAction.push({
     "@type": "OpenUri",
-    name: "📚 Documentación",
+    name: "Documentación",
     targets: [{ os: "default", uri: "https://docs.github.com/en/webhooks" }],
   });
 
   return message;
 }
 
-async function sendToTeams(data: AlertResponse) {
+const sendToTeams = async (data: AlertResponse) => {
   try {
     
     const teamsWebhookUrl = appConfig.app.comunication;
@@ -54,7 +53,7 @@ async function sendToTeams(data: AlertResponse) {
     if (!response.ok) throw new Error(`Error enviando notificación: ${response.status}`);
 
     console.log("Notificación enviada correctamente a Teams");
-    
+
   } catch (err) {
     console.error("Error en sendToTeams:", err);
   }
