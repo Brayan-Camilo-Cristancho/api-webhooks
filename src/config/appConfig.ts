@@ -1,5 +1,3 @@
-
-
 import type { AppConfig } from '../core/index.js';
 import config from './environmentsConfig.js';
 

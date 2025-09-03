@@ -24,7 +24,8 @@ export class SecurityWebhookService {
 			message: "Webhook recibido y procesado correctamente, se crea alerta de rama importante eliminada",
 			repository,
 			branch,
-			alert: `Alerta: Se eliminó la rama protegida ${branch} en el repo ${repository}`
+			alert: `Alerta: Se eliminó la rama protegida ${branch} en el repo ${repository}`,
+			category: "high"
 		};
 	}
 
@@ -50,6 +51,7 @@ export class SecurityWebhookService {
 			repository: repositoryFullName,
 			branch: branchName,
 			alert: `Se eliminó la protección de la rama "${branchName}" en el repositorio ${repositoryFullName}.`,
+			category: "medium"
 		};
 	}
 
@@ -71,6 +73,7 @@ export class SecurityWebhookService {
 			repository,
 			branch,
 			alert: `Solicitud de bypass (${action}) en la rama "${branch}" del repositorio ${repository} por el usuario ${actor}. Estado: ${state}`,
+			category: "low"
 		};
 	}
 }
@@ -102,6 +105,7 @@ export class TeamWebhookService {
 			event: "membership",
 			message: `Cambio en membresía detectado: ${action}`,
 			alert: alertMessage,
+			category: 'low'
 		};
 	}
 }
@@ -137,6 +141,7 @@ export class RepositoryWebhookService {
 			message: "Repositorio eliminado",
 			repository: repoName,
 			alert: `Se eliminó un repositorio (${repoName}) en la organización ${org} por ${creator}. URL: ${repoUrl}`,
+			category: "high"
 		};
 	}
 
@@ -163,6 +168,7 @@ export class RepositoryWebhookService {
 				message: "Inconsistencia en datos de usuario",
 				repository: payload.repository?.full_name ?? "",
 				alert: message.join(" , "),
+				category: "low"
 			};
 		}
 
@@ -184,7 +190,9 @@ export class RepositoryWebhookService {
 			event: "repository",
 			message: "Pull request generado",
 			alert: `Webhook recibido y procesado correctamente se creo el pull request ${pr.data.html_url}`,
-			repository: payload.repository?.full_name
+			repository: payload.repository?.full_name,
+			category: 'success'
+
 		};
 	}
 
@@ -221,6 +229,7 @@ export class RepositoryWebhookService {
 			message: "Webhook recibido y procesado correctamente, se crea alerta de carpeta protegida",
 			repository: repo.full_name,
 			alert: JSON.stringify(alertMessages),
+			category: 'medium'
 		};
 	}
 
@@ -267,7 +276,8 @@ export class RepositoryWebhookService {
 			event: 'repository',
 			message: "Webhook recibido y procesado correctamente, se crea alerta de posible force push",
 			repository: repo,
-			alert: status
+			alert: status,
+			category: 'low'
 		};
 	}
 
@@ -303,6 +313,7 @@ export class TokenWebhookService {
 			event: "personal_access_token_request",
 			message: `Evento PAT detectado: ${action}`,
 			alert: alertMessage,
+			category: 'notify'
 		};
 	}
 }

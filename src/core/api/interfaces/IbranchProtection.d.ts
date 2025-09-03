@@ -1,4 +1,3 @@
-
 export interface BranchProtection {
 	requiredApprovals: number;
 	requireCodeOwnerReviews: boolean;

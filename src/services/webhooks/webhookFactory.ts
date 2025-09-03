@@ -1,5 +1,3 @@
-
-
 import type { ReportGitHubEventType } from '../../core/index.js';
 import {
   SecurityWebhookService,

@@ -1,8 +1,6 @@
 import type { Response } from 'express';
 import type { ApiResponse } from '../core/index.js';
 
-
-
 export function createSuccessResponse<T>(data: T): ApiResponse<T> {
   return {
     success: true,
