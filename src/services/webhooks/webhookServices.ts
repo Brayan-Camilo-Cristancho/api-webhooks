@@ -146,34 +146,57 @@ export class RepositoryWebhookService {
 	}
 
 	async monitorPushUser(payload: RepositoryEventPayload): Promise<AlertResponse | null> {
-
 		const gitUser = payload.pusher?.name ?? "";
 		const gitEmail = payload.pusher?.email ?? "";
 		const githubUser = payload.sender?.login ?? "";
-		const githubEmail = await githubService.getDataUser(githubUser).then(user => user.email).catch(() => "");
+		const githubEmail = await githubService
+			.getDataUser(githubUser)
+			.then(user => user.email)
+			.catch(() => "");
+
 		const message = [];
 
+		console.log("Datos recibidos del push:");
+		console.log(" - gitUser:", gitUser);
+		console.log(" - gitEmail:", gitEmail);
+		console.log(" - githubUser:", githubUser);
+		console.log(" - githubEmail:", githubEmail);
+
+		if (gitEmail && githubEmail) {
+			console.log(`Comparando emails → gitEmail: ${gitEmail} | githubEmail: ${githubEmail}`);
+		}
+
+		if (gitUser && githubUser) {
+			console.log(`Comparando users → gitUser: ${gitUser} | githubUser: ${githubUser}`);
+		}
 
 		if (gitEmail && githubEmail && gitEmail !== githubEmail) {
-			message.push(`Inconsistencia detectada: El correo del usuario que hizo push (${gitUser}, ${gitEmail}) no tiene coincidencia cone el correo de GitHub (${githubUser}, ${githubEmail}).`);
+			message.push(
+				`Inconsistencia detectada: El correo del usuario que hizo push (${gitUser}, ${gitEmail}) no tiene coincidencia con el correo de GitHub (${githubUser}, ${githubEmail}).`
+			);
 		}
 
 		if (gitUser && githubUser && gitUser !== githubUser) {
-			message.push(`Inconsistencia detectada: El usuario que hizo push (${gitUser}, ${gitEmail}) no coincide con el usuario de GitHub (${githubUser}, ${githubEmail}).`);
+			message.push(
+				`Inconsistencia detectada: El usuario que hizo push (${gitUser}, ${gitEmail}) no coincide con el usuario de GitHub (${githubUser}, ${githubEmail}).`
+			);
 		}
 
 		if (message.length > 0) {
+			console.log("Inconsistencias encontradas:", message);
 			return {
 				event: "repository",
 				message: "Inconsistencia en datos de usuario",
 				repository: payload.repository?.full_name ?? "",
 				alert: message.join(" , "),
-				category: "low"
+				category: "low",
 			};
 		}
 
+		console.log("No se encontraron inconsistencias de usuario.");
 		return null;
 	}
+
 
 	async generatePullRequest(payload: RepositoryEventPayload): Promise<AlertResponse | null> {
 
@@ -285,7 +308,7 @@ export class RepositoryWebhookService {
 
 export class TokenWebhookService {
 
-	monitorPersonalAccessTokenRequests(payload: PersonalAccessTokenRequestEventPayload ): AlertResponse {
+	monitorPersonalAccessTokenRequests(payload: PersonalAccessTokenRequestEventPayload): AlertResponse {
 
 		const action = payload.action;
 
