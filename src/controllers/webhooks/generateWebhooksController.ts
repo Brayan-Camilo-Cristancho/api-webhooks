@@ -108,9 +108,9 @@ const validateMonitorPushUser = asyncHandler(async (req: Request, res: Response,
 
   const event = req.headers["x-github-event"] as ReportGitHubEventType;
 
-  if (event !== 'push') {
-    throw new BadRequestError('Evento no soportado. Solo se procesan eventos push.', 'UNSUPPORTED_EVENT');
-  }
+  // if (event !== 'push') {
+  //   throw new BadRequestError('Evento no soportado. Solo se procesan eventos push.', 'UNSUPPORTED_EVENT');
+  // }
 
   const securityService = WebhookServiceFactory.getServiceForEventType(event);
 
