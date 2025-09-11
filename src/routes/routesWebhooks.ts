@@ -15,7 +15,6 @@ router.post('/bypass-push-ruleset', json({ verify: verifySignature }), reportByp
 router.post('/membership-change', json({ verify: verifySignature }), reportMembershipChange);
 router.post('/repository-removed', json({ verify: verifySignature }), reportPrivateRepoRemoved);
 router.post('/personal-access-token-request', json({ verify: verifySignature }), reportPersonalAccessTokenRequest);
-router.post('monitorUserPushChanges', json({ verify: verifySignature }), validateMonitorPushUser);
+router.post('/monitorUserPushChanges', json({ verify: verifySignature }), validateMonitorPushUser);
 
 export default router;
-	
