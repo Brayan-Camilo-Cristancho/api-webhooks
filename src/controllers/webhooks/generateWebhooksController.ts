@@ -102,4 +102,27 @@ const validateForcePush = asyncHandler(async (req: Request, res: Response, _: Ne
 
 });
 
-export { validateChangesFolderConfig, validateChangesPushUser, changesGeneratePullRequest, validateForcePush }
+const validateMonitorPushUser = asyncHandler(async (req: Request, res: Response, _: NextFunction) => {
+
+  const payload = req.body as GitHubPushEvent;
+
+  const event = req.headers["x-github-event"] as ReportGitHubEventType;
+
+  if (event !== 'push') {
+    throw new BadRequestError('Evento no soportado. Solo se procesan eventos push.', 'UNSUPPORTED_EVENT');
+  }
+
+  const securityService = WebhookServiceFactory.getServiceForEventType(event);
+
+  const result = await securityService.monitorPushUser(payload);
+
+  if (result) {
+    sendToTeams(result);
+    sendSuccessResponse(res, result);
+  }
+
+});
+
+
+
+export { validateChangesFolderConfig, validateChangesPushUser, changesGeneratePullRequest, validateForcePush, validateMonitorPushUser };
