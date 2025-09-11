@@ -103,25 +103,26 @@ const validateForcePush = asyncHandler(async (req: Request, res: Response, _: Ne
 });
 
 const validateMonitorPushUser = asyncHandler(async (req: Request, res: Response, _: NextFunction) => {
-
   const payload = req.body as GitHubPushEvent;
-
   const event = req.headers["x-github-event"] as ReportGitHubEventType;
 
-  // if (event !== 'push') {
-  //   throw new BadRequestError('Evento no soportado. Solo se procesan eventos push.', 'UNSUPPORTED_EVENT');
-  // }
+  res.status(200).json({ message: "Webhook recibido" });
 
-  const securityService = WebhookServiceFactory.getServiceForEventType(event);
+  setImmediate(async () => {
+    try {
+      const securityService = WebhookServiceFactory.getServiceForEventType(event);
 
-  const result = await securityService.monitorPushUser(payload);
+      const result = await securityService.monitorPushUser(payload);
 
-  if (result) {
-    sendToTeams(result);
-    sendSuccessResponse(res, result);
-  }
-
+      if (result) {
+        sendToTeams(result);
+      }
+    } catch (error) {
+      console.error("Error procesando webhook:", error);
+    }
+  });
 });
+
 
 
 
