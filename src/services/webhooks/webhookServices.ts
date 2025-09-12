@@ -50,7 +50,7 @@ export class SecurityWebhookService {
 			message: "Protección de rama eliminada",
 			repository: repositoryFullName,
 			branch: branchName,
-			alert: `Se eliminó la protección de la rama "${branchName}" en el repositorio ${repositoryFullName}.`,
+			alert: `Se eliminó la protección de la rama \"${branchName}\" en el repositorio ${repositoryFullName}.`,
 			category: "medium"
 		};
 	}

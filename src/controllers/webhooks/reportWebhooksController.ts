@@ -53,6 +53,8 @@ const reportDeleteProtectionBranch = asyncHandler(async (req: Request, res: Resp
 			const result = WebhookServiceFactory.getServiceForEventType(event)
 				.validateBranchProtectionRemoval(payload);
 
+			console.log("Resultado de validateBranchProtectionRemoval:", result);
+
 			if (result) sendToTeams(result);
 
 		} catch (error) {

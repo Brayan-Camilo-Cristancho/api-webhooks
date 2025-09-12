@@ -26,10 +26,12 @@ export const safeAsync = <T extends (...args: any[]) => Promise<any>>(fn: T) => 
 export const fillTemplate = (template: any, data: Record<string, string>): any => {
   const jsonString = JSON.stringify(template);
   const replaced = jsonString.replace(/\$\{(.*?)\}/g, (_, key) => {
-    return data[key.trim()] ?? "";
+    const value = data[key.trim()] ?? "";
+    return JSON.stringify(value).slice(1, -1);
   });
   return JSON.parse(replaced);
 };
+
 
 export const mapSeverityConfig = (category: string) => {
   const config: Record<string, { color: string; badge: string }> = {
