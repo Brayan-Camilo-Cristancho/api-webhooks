@@ -24,7 +24,7 @@ export class SecurityWebhookService {
 			message: "Webhook recibido y procesado correctamente, se crea alerta de rama importante eliminada",
 			repository,
 			branch,
-			alert: `Alerta: Se eliminó la rama protegida ${branch} en el repo ${repository}`,
+			alert: `Alerta: Se eliminó la rama protegida ${branch} en el repositorio ${repository}`,
 			category: "high"
 		};
 	}

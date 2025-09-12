@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import { BadRequestError, sendSuccessResponse, asyncHandler } from "../../utils/index.js";
 import { WebhookServiceFactory } from "../../services/index.js";
 import { sendToTeams } from "../../services/comunicationService.js";
-import type { AlertResponse, BranchProtectionRuleEventPayload, BypassPushRulesetEventPayload, DeleteEventPayload, MembershipEventPayload, PersonalAccessTokenRequestEventPayload, ReportGitHubEventType, RepositoryEventPayload } from "../../core/index.js";
+import type { BranchProtectionRuleEventPayload, BypassPushRulesetEventPayload, DeleteEventPayload, MembershipEventPayload, PersonalAccessTokenRequestEventPayload, ReportGitHubEventType, RepositoryEventPayload } from "../../core/index.js";
 
 const reportDeleteImportantBranch = asyncHandler(async (req: Request, res: Response, _: NextFunction) => {
 
@@ -22,7 +22,7 @@ const reportDeleteImportantBranch = asyncHandler(async (req: Request, res: Respo
 
 	setImmediate(() => {
 		try {
-			
+
 			const result = WebhookServiceFactory.getServiceForEventType(event)
 				.validateDeletedBranch(payload);
 
@@ -48,14 +48,16 @@ const reportDeleteProtectionBranch = asyncHandler(async (req: Request, res: Resp
 	sendSuccessResponse(res, { message: "Webhook recibido para branch protection removal" });
 
 	setImmediate(() => {
-		WebhookServiceFactory.getServiceForEventType(event)
-			.validateBranchProtectionRemoval(payload)
-			.then((result: AlertResponse | null) => {
-				if (result) sendToTeams(result);
-			})
-			.catch((error: Error) => {
-				console.error("Error procesando validateBranchProtectionRemoval:", error);
-			});
+
+		try {
+			const result = WebhookServiceFactory.getServiceForEventType(event)
+				.validateBranchProtectionRemoval(payload);
+
+			if (result) sendToTeams(result);
+
+		} catch (error) {
+			console.error("Error procesando validateBranchProtectionRemoval:", error);
+		}
 	});
 
 });
@@ -73,14 +75,16 @@ const reportBypassPushRuleset = asyncHandler(async (req: Request, res: Response,
 	sendSuccessResponse(res, { message: "Webhook recibido para bypass push ruleset" });
 
 	setImmediate(() => {
-		WebhookServiceFactory.getServiceForEventType(event)
-			.monitorBypassPushRuleset(payload)
-			.then((result: AlertResponse | null) => {
-				if (result) sendToTeams(result);
-			})
-			.catch((error: Error) => {
-				console.error("Error procesando monitorBypassPushRuleset:", error);
-			});
+
+		try {
+			const result = WebhookServiceFactory.getServiceForEventType(event)
+				.monitorBypassPushRuleset(payload);
+
+			if (result) sendToTeams(result);
+
+		} catch (error) {
+			console.error("Error procesando monitorBypassPushRuleset:", error);
+		}
 	});
 
 });
@@ -98,14 +102,16 @@ const reportMembershipChange = asyncHandler(async (req: Request, res: Response, 
 	sendSuccessResponse(res, { message: "Webhook recibido para cambios de membresía" });
 
 	setImmediate(() => {
-		WebhookServiceFactory.getServiceForEventType(event)
-			.monitorMembershipChanges(payload)
-			.then((result: AlertResponse | null) => {
-				if (result) sendToTeams(result);
-			})
-			.catch((error: Error) => {
-				console.error("Error procesando monitorMembershipChanges:", error);
-			});
+
+		try {
+			const result = WebhookServiceFactory.getServiceForEventType(event)
+				.monitorMembershipChanges(payload);
+
+			if (result) sendToTeams(result);
+
+		} catch (error) {
+			console.error("Error procesando monitorMembershipChanges:", error);
+		}
 	});
 
 });
@@ -127,14 +133,16 @@ const reportPrivateRepoRemoved = asyncHandler(async (req: Request, res: Response
 	sendSuccessResponse(res, { message: "Webhook recibido para repositorios privados eliminados" });
 
 	setImmediate(() => {
-		WebhookServiceFactory.getServiceForEventType(event)
-			.monitorPrivateRepositoryRemoved(payload)
-			.then((result: AlertResponse | null) => {
-				if (result) sendToTeams(result);
-			})
-			.catch((error: Error) => {
-				console.error("Error procesando monitorPrivateRepositoryRemoved:", error);
-			});
+
+		try {
+			const result = WebhookServiceFactory.getServiceForEventType(event)
+				.monitorPrivateRepositoryRemoved(payload);
+
+			if (result) sendToTeams(result);
+
+		} catch (error) {
+			console.error("Error procesando monitorPrivateRepositoryRemoved:", error);
+		}
 	});
 });
 
@@ -151,14 +159,16 @@ const reportPersonalAccessTokenRequest = asyncHandler(async (req: Request, res: 
 	sendSuccessResponse(res, { message: "Webhook recibido para solicitudes de PAT" });
 
 	setImmediate(() => {
-		WebhookServiceFactory.getServiceForEventType(event)
-			.monitorPersonalAccessTokenRequests(payload)
-			.then((result: AlertResponse | null) => {
-				if (result) sendToTeams(result);
-			})
-			.catch((error: Error) => {
-				console.error("Error procesando monitorPersonalAccessTokenRequests:", error);
-			});
+
+		try {
+			const result = WebhookServiceFactory.getServiceForEventType(event)
+				.monitorPersonalAccessTokenRequests(payload);
+
+			if (result) sendToTeams(result);
+			
+		} catch (error) {
+			console.error("Error procesando monitorPersonalAccessTokenRequests:", error);
+		}
 	});
 
 });
