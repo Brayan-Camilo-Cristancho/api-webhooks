@@ -6,7 +6,7 @@ import {
 } from "../../utils/index.js";
 import { WebhookServiceFactory } from "../../services/index.js";
 import { sendToTeams } from "../../services/comunicationService.js";
-import type { GitHubPushEvent, ReportGitHubEventType } from "../../core/index.js";
+import type { AlertResponse, GitHubPushEvent, ReportGitHubEventType } from "../../core/index.js";
 
 const changesGeneratePullRequest = asyncHandler(async (req: Request, res: Response, _: NextFunction) => {
 
@@ -16,18 +16,22 @@ const changesGeneratePullRequest = asyncHandler(async (req: Request, res: Respon
 
   console.log(`Evento recibido para generar pull request: ${event}`);
 
-  if (event !== 'push') {
-    throw new BadRequestError('Evento no soportado. Solo se procesan eventos push.', 'UNSUPPORTED_EVENT');
+  if (event !== "push") {
+    throw new BadRequestError("Evento no soportado. Solo se procesan eventos push.", "UNSUPPORTED_EVENT");
   }
 
-  const securityService = WebhookServiceFactory.getServiceForEventType(event);
+  sendSuccessResponse(res, { message: "Webhook recibido para generar pull request" });
 
-  const result = await securityService.generatePullRequest(payload);
-
-  if (result) {
-    sendToTeams(result);
-    sendSuccessResponse(res, result);
-  }
+  setImmediate(() => {
+    WebhookServiceFactory.getServiceForEventType(event)
+      .generatePullRequest(payload)
+      .then((result: AlertResponse | null) => {
+        if (result) sendToTeams(result);
+      })
+      .catch((error: Error) => {
+        console.error("Error procesando generatePullRequest:", error);
+      });
+  });
 
 });
 
@@ -46,17 +50,21 @@ const validateChangesFolderConfig = asyncHandler(async (req: Request, res: Respo
   }
 
   if (branch !== "refs/heads/main") {
-    return;
+    return res.status(200).json({ message: "No es la rama main, no se procesa." });
   }
 
-  const securityService = WebhookServiceFactory.getServiceForEventType(event);
+  sendSuccessResponse(res, { message: "Webhook recibido para validar cambios en config" });
 
-  const result = await securityService.changesFolderConfig(payload);
-
-  if (result) {
-    sendToTeams(result);
-    sendSuccessResponse(res, result);
-  }
+  setImmediate(() => {
+    WebhookServiceFactory.getServiceForEventType(event)
+      .changesFolderConfig(payload)
+      .then((result: AlertResponse | null) => {
+        if (result) sendToTeams(result);
+      })
+      .catch((error: Error) => {
+        console.error("Error procesando changesFolderConfig:", error);
+      });
+  });
 
 });
 
@@ -66,18 +74,22 @@ const validateChangesPushUser = asyncHandler(async (req: Request, res: Response,
 
   const event = req.headers["x-github-event"] as ReportGitHubEventType;
 
-  if (event !== 'push') {
-    throw new BadRequestError('Evento no soportado. Solo se procesan eventos push.', 'UNSUPPORTED_EVENT');
+  if (event !== "push") {
+    throw new BadRequestError("Evento no soportado. Solo se procesan eventos push.", "UNSUPPORTED_EVENT");
   }
 
-  const securityService = WebhookServiceFactory.getServiceForEventType(event);
+  sendSuccessResponse(res, { message: "Webhook recibido para validar cambios de usuario" });
 
-  const result = await securityService.monitorPushUser(payload);
-
-  if (result) {
-    sendToTeams(result);
-    sendSuccessResponse(res, result);
-  }
+  setImmediate(() => {
+    WebhookServiceFactory.getServiceForEventType(event)
+      .monitorPushUser(payload)
+      .then((result: AlertResponse | null) => {
+        if (result) sendToTeams(result);
+      })
+      .catch((error: Error) => {
+        console.error("Error procesando monitorPushUser:", error);
+      });
+  });
 
 });
 
@@ -87,43 +99,23 @@ const validateForcePush = asyncHandler(async (req: Request, res: Response, _: Ne
 
   const event = req.headers["x-github-event"] as ReportGitHubEventType;
 
-  if (event !== 'push') {
-    throw new BadRequestError('Evento no soportado. Solo se procesan eventos push.', 'UNSUPPORTED_EVENT');
+  if (event !== "push") {
+    throw new BadRequestError("Evento no soportado. Solo se procesan eventos push.", "UNSUPPORTED_EVENT");
   }
 
-  const securityService = WebhookServiceFactory.getServiceForEventType(event);
+  res.status(200).json({ message: "Webhook recibido para validar force push" });
 
-  const result = await securityService.forcePush(payload);
-
-  if (result) {
-    sendToTeams(result);
-    sendSuccessResponse(res, result);
-  }
-
-});
-
-const validateMonitorPushUser = asyncHandler(async (req: Request, res: Response, _: NextFunction) => {
-  const payload = req.body as GitHubPushEvent;
-  const event = req.headers["x-github-event"] as ReportGitHubEventType;
-
-  res.status(200).json({ message: "Webhook recibido" });
-
-  setImmediate(async () => {
-    try {
-      const securityService = WebhookServiceFactory.getServiceForEventType(event);
-
-      const result = await securityService.monitorPushUser(payload);
-
-      if (result) {
-        sendToTeams(result);
-      }
-    } catch (error) {
-      console.error("Error procesando webhook:", error);
-    }
+  setImmediate(() => {
+    WebhookServiceFactory.getServiceForEventType(event)
+      .forcePush(payload)
+      .then((result: AlertResponse | null) => {
+        if (result) sendToTeams(result);
+      })
+      .catch((error: Error) => {
+        console.error("Error procesando forcePush:", error);
+      });
   });
+
 });
 
-
-
-
-export { validateChangesFolderConfig, validateChangesPushUser, changesGeneratePullRequest, validateForcePush, validateMonitorPushUser };
+export { validateChangesFolderConfig, validateChangesPushUser, changesGeneratePullRequest, validateForcePush };

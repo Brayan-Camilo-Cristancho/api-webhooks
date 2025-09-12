@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { json } from 'express';
 import { verifySignature } from '../middlewares/index.js';
-import { changesGeneratePullRequest, reportBypassPushRuleset, reportDeleteImportantBranch, reportDeleteProtectionBranch, reportMembershipChange, reportPersonalAccessTokenRequest, reportPrivateRepoRemoved, validateChangesFolderConfig, validateChangesPushUser, validateForcePush, validateMonitorPushUser } from '../controllers/index.js';
+import { changesGeneratePullRequest, reportBypassPushRuleset, reportDeleteImportantBranch, reportDeleteProtectionBranch, reportMembershipChange, reportPersonalAccessTokenRequest, reportPrivateRepoRemoved, validateChangesFolderConfig, validateChangesPushUser, validateForcePush } from '../controllers/index.js';
 
 const router = Router();
 
@@ -15,6 +15,5 @@ router.post('/bypass-push-ruleset', json({ verify: verifySignature }), reportByp
 router.post('/membership-change', json({ verify: verifySignature }), reportMembershipChange);
 router.post('/repository-removed', json({ verify: verifySignature }), reportPrivateRepoRemoved);
 router.post('/personal-access-token-request', json({ verify: verifySignature }), reportPersonalAccessTokenRequest);
-router.post('/monitorUserPushChanges', json({ verify: verifySignature }), validateMonitorPushUser);
 
 export default router;

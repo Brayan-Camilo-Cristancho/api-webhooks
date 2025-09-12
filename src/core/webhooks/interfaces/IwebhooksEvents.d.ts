@@ -51,6 +51,16 @@ export interface RepositoryEventPayload {
   organization?: GitHubOrganization;
   pusher?: GitHubUser;
   sender?: GitHubUser;
+  head_commit: {
+    author: {
+      name: string
+      email: string
+    },
+    committer: {
+      name: string,
+      email: string
+    }
+  }
 }
 
 export interface PersonalAccessTokenRequestEventPayload {

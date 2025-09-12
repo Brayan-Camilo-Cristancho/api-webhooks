@@ -132,7 +132,7 @@ export class RepositoryWebhookService {
 
 		const isPublic = !repo.private;
 
-		if (!isPublic) {
+		if (isPublic) {
 			return null;
 		}
 
@@ -146,54 +146,46 @@ export class RepositoryWebhookService {
 	}
 
 	async monitorPushUser(payload: RepositoryEventPayload): Promise<AlertResponse | null> {
-		const gitUser = payload.pusher?.name ?? "";
-		const gitEmail = payload.pusher?.email ?? "";
+
 		const githubUser = payload.sender?.login ?? "";
+
 		const githubEmail = await githubService
 			.getDataUser(githubUser)
 			.then(user => user.email)
 			.catch(() => "");
 
-		const message = [];
+		const headCommit = payload.head_commit;
 
-		console.log("Datos recibidos del push:");
-		console.log(" - gitUser:", gitUser);
-		console.log(" - gitEmail:", gitEmail);
-		console.log(" - githubUser:", githubUser);
-		console.log(" - githubEmail:", githubEmail);
+		const gitData = headCommit?.author;
 
-		if (gitEmail && githubEmail) {
-			console.log(`Comparando emails → gitEmail: ${gitEmail} | githubEmail: ${githubEmail}`);
+		const inconsistencies: string[] = [];
+
+		if (gitData) {
+
+			if (gitData.name?.toLowerCase() !== githubUser.toLowerCase()) {
+				inconsistencies.push(
+					`El autor del commit (${gitData.name}, ${gitData.email}) no coincide con el usuario de GitHub (${githubUser}, ${githubEmail}).`
+				);
+			}
+
+			if (gitData.email !== githubEmail) {
+				inconsistencies.push(
+					`El email del autor del commit (${gitData.email}, no coincide con el email de GitHub ($ ${githubEmail}).`
+				);
+			}
+
 		}
 
-		if (gitUser && githubUser) {
-			console.log(`Comparando users → gitUser: ${gitUser} | githubUser: ${githubUser}`);
-		}
-
-		if (gitEmail && githubEmail && gitEmail !== githubEmail) {
-			message.push(
-				`Inconsistencia detectada: El correo del usuario que hizo push (${gitUser}, ${gitEmail}) no tiene coincidencia con el correo de GitHub (${githubUser}, ${githubEmail}).`
-			);
-		}
-
-		if (gitUser && githubUser && gitUser !== githubUser) {
-			message.push(
-				`Inconsistencia detectada: El usuario que hizo push (${gitUser}, ${gitEmail}) no coincide con el usuario de GitHub (${githubUser}, ${githubEmail}).`
-			);
-		}
-
-		if (message.length > 0) {
-			console.log("Inconsistencias encontradas:", message);
+		if (inconsistencies.length > 0) {
 			return {
 				event: "repository",
 				message: "Inconsistencia en datos de usuario",
 				repository: payload.repository?.full_name ?? "",
-				alert: message.join(" , "),
+				alert: inconsistencies.join(" | "),
 				category: "low",
 			};
 		}
 
-		console.log("No se encontraron inconsistencias de usuario.");
 		return null;
 	}
 
