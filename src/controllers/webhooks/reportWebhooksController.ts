@@ -21,14 +21,16 @@ const reportDeleteImportantBranch = asyncHandler(async (req: Request, res: Respo
 	sendSuccessResponse(res, { message: "Webhook recibido para ramas borradas" });
 
 	setImmediate(() => {
-		WebhookServiceFactory.getServiceForEventType(event)
-			.validateDeletedBranch(payload)
-			.then((result: AlertResponse | null) => {
-				if (result) sendToTeams(result);
-			})
-			.catch((error: Error) => {
-				console.error("Error procesando validateDeletedBranch:", error);
-			});
+		try {
+			
+			const result = WebhookServiceFactory.getServiceForEventType(event)
+				.validateDeletedBranch(payload);
+
+			if (result) sendToTeams(result);
+
+		} catch (error) {
+			console.error("Error procesando validateDeletedBranch:", error);
+		}
 	});
 
 });
@@ -138,26 +140,26 @@ const reportPrivateRepoRemoved = asyncHandler(async (req: Request, res: Response
 
 const reportPersonalAccessTokenRequest = asyncHandler(async (req: Request, res: Response, _: NextFunction) => {
 
-  const event = req.headers["x-github-event"] as ReportGitHubEventType;
+	const event = req.headers["x-github-event"] as ReportGitHubEventType;
 
-  if (event !== "personal_access_token_request") {
-    throw new BadRequestError("Evento no soportado. Solo se procesan eventos personal_access_token_request.", "UNSUPPORTED_EVENT");
-  }
+	if (event !== "personal_access_token_request") {
+		throw new BadRequestError("Evento no soportado. Solo se procesan eventos personal_access_token_request.", "UNSUPPORTED_EVENT");
+	}
 
-  const payload = req.body as PersonalAccessTokenRequestEventPayload;
+	const payload = req.body as PersonalAccessTokenRequestEventPayload;
 
-  sendSuccessResponse(res, { message: "Webhook recibido para solicitudes de PAT" });
+	sendSuccessResponse(res, { message: "Webhook recibido para solicitudes de PAT" });
 
-  setImmediate(() => {
-    WebhookServiceFactory.getServiceForEventType(event)
-      .monitorPersonalAccessTokenRequests(payload)
-      .then((result: AlertResponse | null) => {
-        if (result) sendToTeams(result);
-      })
-      .catch((error: Error) => {
-        console.error("Error procesando monitorPersonalAccessTokenRequests:", error);
-      });
-  });
+	setImmediate(() => {
+		WebhookServiceFactory.getServiceForEventType(event)
+			.monitorPersonalAccessTokenRequests(payload)
+			.then((result: AlertResponse | null) => {
+				if (result) sendToTeams(result);
+			})
+			.catch((error: Error) => {
+				console.error("Error procesando monitorPersonalAccessTokenRequests:", error);
+			});
+	});
 
 });
 
