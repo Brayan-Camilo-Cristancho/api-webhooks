@@ -1,3 +1,4 @@
+import { json } from 'stream/consumers';
 import type { AlertResponse, BranchProtectionRuleEventPayload, BypassPushRulesetEventPayload, DeleteEventPayload, MembershipEventPayload, PersonalAccessTokenRequestEventPayload, RepositoryEventPayload } from '../../core/index.js';
 import { githubService } from '../githubService.js';
 
@@ -192,7 +193,7 @@ export class RepositoryWebhookService {
 
 		const repo = payload.repository;
 
-		let alertMessages: string[] = [];
+		let alertMessages: any[] = [];
 
 		commits.forEach((commit: any) => {
 
@@ -200,10 +201,13 @@ export class RepositoryWebhookService {
 
 			if (protectedFiles.length > 0) {
 				const message =
-					`Carpeta protegida modificada en el repositorio ${repo.full_name} por el usuario ${commit.author.username}
- 					 Archivos: ${protectedFiles.join(", ")}
-					 Commit: ${commit.url}
-					 Mensaje: "${commit.message}"`;
+				{
+					message: `Carpeta protegida modificada en el repositorio ${repo.full_name} por el usuario ${commit.author.username}`,
+					file: `${protectedFiles.join(", ")}`,
+					commit: `${commit.url}`,
+					commitMessage: `"${commit.message}"`
+				}
+
 
 				alertMessages.push(message);
 			}
@@ -214,11 +218,16 @@ export class RepositoryWebhookService {
 			return null;
 		}
 
+		const fullRef = payload.ref ?? "";
+
+		const branch = fullRef.replace("refs/heads/", "");
+
 		return {
 			event: 'repository',
-			message: "Webhook recibido y procesado correctamente, se crea alerta de carpeta protegida",
+			message: "Alerta sobre carpeta protegida modificada ",
+			branch: `${branch}`,
 			repository: repo.full_name,
-			alert: JSON.stringify(alertMessages),
+			alert: alertMessages.map(am => ` Alerta: ${am.message}, Archivo: ${am.file}, Commit: ${am.commit}, Mensaje: ${am.commitMessage}`).join(" | "),
 			category: 'medium'
 		};
 	}

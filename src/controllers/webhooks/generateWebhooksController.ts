@@ -23,14 +23,18 @@ const changesGeneratePullRequest = asyncHandler(async (req: Request, res: Respon
   sendSuccessResponse(res, { message: "Webhook recibido para generar pull request" });
 
   setImmediate(() => {
-    WebhookServiceFactory.getServiceForEventType(event)
-      .generatePullRequest(payload)
-      .then((result: AlertResponse | null) => {
-        if (result) sendToTeams(result);
-      })
-      .catch((error: Error) => {
-        console.error("Error procesando generatePullRequest:", error);
-      });
+    try {
+
+      const result = WebhookServiceFactory.getServiceForEventType(event)
+        .monitorPushUser(payload);
+
+      if (result) sendToTeams(result);
+
+    } catch (error) {
+
+      console.error("Error procesando changesGeneratePullRequest:", error);
+
+    }
   });
 
 });
@@ -56,14 +60,16 @@ const validateChangesFolderConfig = asyncHandler(async (req: Request, res: Respo
   sendSuccessResponse(res, { message: "Webhook recibido para validar cambios en config" });
 
   setImmediate(() => {
-    WebhookServiceFactory.getServiceForEventType(event)
-      .changesFolderConfig(payload)
-      .then((result: AlertResponse | null) => {
-        if (result) sendToTeams(result);
-      })
-      .catch((error: Error) => {
-        console.error("Error procesando changesFolderConfig:", error);
-      });
+    try {
+
+      const result = WebhookServiceFactory.getServiceForEventType(event)
+        .changesFolderConfig(payload);
+
+      if (result) sendToTeams(result);
+
+    } catch (error) {
+      console.error("Error procesando validateChangesFolderConfig:", error);
+    }
   });
 
 });
@@ -106,14 +112,19 @@ const validateForcePush = asyncHandler(async (req: Request, res: Response, _: Ne
   res.status(200).json({ message: "Webhook recibido para validar force push" });
 
   setImmediate(() => {
-    WebhookServiceFactory.getServiceForEventType(event)
-      .forcePush(payload)
-      .then((result: AlertResponse | null) => {
-        if (result) sendToTeams(result);
-      })
-      .catch((error: Error) => {
-        console.error("Error procesando forcePush:", error);
-      });
+    try {
+     
+      const result = WebhookServiceFactory.getServiceForEventType(event)
+        .validateForcePush(payload);
+        
+      if (result) sendToTeams(result);
+
+    } catch (error) {
+
+      console.error("Error procesando validateForcePush:", error);
+      
+    }
+
   });
 
 });
