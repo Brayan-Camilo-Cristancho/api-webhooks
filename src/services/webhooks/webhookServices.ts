@@ -179,7 +179,7 @@ export class RepositoryWebhookService {
 		return {
 			event: "repository",
 			message: "Pull request generado",
-			alert: `Webhook recibido y procesado correctamente se creo el pull request ${pr.data.html_url}`,
+			alert: `Webhook recibido y procesado correctamente se creo el pull request ${pr.html_url}`,
 			repository: payload.repository?.full_name,
 			category: 'success'
 
