@@ -20,7 +20,7 @@ export class WebhookServiceFactory {
     membership: () => (this.teamService ??= new TeamWebhookService()),
     repository: () => (this.repositoryService ??= new RepositoryWebhookService()),
     personal_access_token_request: () => (this.tokenService ??= new TokenWebhookService()),
-    push: () => (this.repositoryService ??= new RepositoryWebhookService()),
+    push: () => (this.repositoryService ??= new RepositoryWebhookService(), this.securityService ??= new SecurityWebhookService()),
   };
 
   static getServiceForEventType(eventType: ReportGitHubEventType): any {
