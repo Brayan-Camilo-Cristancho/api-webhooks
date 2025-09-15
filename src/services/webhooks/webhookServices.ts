@@ -55,27 +55,45 @@ export class SecurityWebhookService {
 		};
 	}
 
-	monitorBypassPushRuleset(payload: BypassPushRulesetEventPayload): AlertResponse {
-
-		const action = payload.action;
-
-		const actor = payload.bypass_request?.actor?.login;
-
-		const branch = payload.bypass_request?.target?.ref?.replace("refs/heads/", "");
-
+	monitorBypassPushRuleset(payload: any): AlertResponse | null {
 		const repository = payload.repository?.full_name;
 
-		const state = payload.bypass_request?.state;
+		if (payload.action && payload.bypass_request) {
+			const action = payload.action;
+			const actor = payload.bypass_request?.actor?.login;
+			const branch = payload.bypass_request?.target?.ref?.replace("refs/heads/", "");
+			const state = payload.bypass_request?.state;
 
-		return {
-			event: "bypass_request_push_ruleset",
-			message: "Solicitud de bypass detectada",
-			repository,
-			branch,
-			alert: `Solicitud de bypass (${action}) en la rama "${branch}" del repositorio ${repository} por el usuario ${actor}. Estado: ${state}`,
-			category: "low"
-		};
+			if (!this.IMPORTANT_BRANCHES.includes(branch)) return null;
+
+			return {
+				event: "bypass_request_push_ruleset",
+				message: "Solicitud de bypass detectada",
+				repository,
+				branch,
+				alert: `Solicitud de bypass (${action}) en la rama "${branch}" del repositorio ${repository} por el usuario ${actor}. Estado: ${state}`,
+				category: "low"
+			};
+		}
+
+		if (payload.head_commit && payload.head_commit.verification?.warnings?.length > 0) {
+			const actor = payload.pusher?.name || payload.sender?.login;
+			const branch = payload.ref?.replace("refs/heads/", "");
+			if (!this.IMPORTANT_BRANCHES.includes(branch)) return null;
+
+			return {
+				event: "direct_bypass_push_ruleset",
+				message: "Bypass directo de push ruleset detectado",
+				repository,
+				branch,
+				alert: `El usuario ${actor} hizo un bypass directo en la rama "${branch}" del repositorio ${repository} (sin solicitud).`,
+				category: "medium"
+			};
+		}
+
+		return null;
 	}
+
 }
 
 export class TeamWebhookService {

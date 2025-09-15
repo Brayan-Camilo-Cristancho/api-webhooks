@@ -68,8 +68,8 @@ const reportBypassPushRuleset = asyncHandler(async (req: Request, res: Response,
 
 	const event = req.headers["x-github-event"] as ReportGitHubEventType;
 
-	if (event !== "bypass_request_push_ruleset") {
-		throw new BadRequestError("Evento no soportado. Solo se procesan bypass_request_push_ruleset.", "UNSUPPORTED_EVENT");
+	if (event !== "bypass_request_push_ruleset" && event !== "push") {
+		throw new BadRequestError("Evento no soportado. Solo se procesan bypass_request_push_ruleset y push.", "UNSUPPORTED_EVENT");
 	}
 
 	const payload = req.body as BypassPushRulesetEventPayload;
