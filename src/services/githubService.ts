@@ -1,7 +1,7 @@
 
 import { octokit } from "../auth/index.js";
 import { appConfig } from "../config/index.js";
-import type { BranchProtection, ReportRoleUsers, RepositoryData, Role } from "../core/index.js";
+import type { BranchProtection, ReportRoleUsers, RepositoryData, RepositoryEventPayload, Role } from "../core/index.js";
 import { safeAsync } from "../utils/index.js";
 
 
@@ -94,25 +94,40 @@ const getDataUser = safeAsync(async (username: string) => {
 	});
 
 	console.log(user)
-	
+
 	return user;
 
 });
 
-const createPullRequest = safeAsync(async (data) => {
+const createPullRequest = safeAsync(async (data: RepositoryEventPayload) => {
+
+	const headBranch = data.ref ? data.ref.replace("refs/heads/", "") : "";
+
+	const existingPRs = await octokit.rest.pulls.list({
+		owner: appConfig.app.GitHubOwner,
+		repo: data.repository.name,
+		state: "open",
+		head: `${appConfig.app.GitHubOwner}:${headBranch}`,
+		base: "main"
+	});
+
+	if (existingPRs.data.length > 0 && existingPRs.data[0]) {
+
+		return existingPRs.data[0];
+	}
 
 	const res = await octokit.rest.pulls.create({
 		owner: appConfig.app.GitHubOwner,
 		repo: data.repository.name,
 		title: ":robot: Pull request generated automatically",
-		head: data.ref,
+		head: headBranch,
 		base: "main",
-		body: `Pull request generado automáticamente desde la rama ${data.ref} por el webhook de GitHub. Para el commit ${data.commits[0]?.id}, con la siguiente especificación: ${data.commits[0]?.message}`,
+		body: `Pull request generado automáticamente desde la rama ${headBranch} por el webhook de GitHub. Para el commit ${data.commits[0]?.id}, con la siguiente especificación: ${data.commits[0]?.message}`,
 	});
 
-	return res;
-
+	return res.data;
 });
+
 
 const commitExists = safeAsync(async (repo: string, commitSha: string) => {
 	try {
