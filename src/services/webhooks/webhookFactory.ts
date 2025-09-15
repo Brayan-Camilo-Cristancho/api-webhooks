@@ -16,11 +16,10 @@ export class WebhookServiceFactory {
   private static readonly serviceMap: Record<ReportGitHubEventType, () => any> = {
     delete: () => (this.securityService ??= new SecurityWebhookService()),
     branch_protection_rule: () => (this.securityService ??= new SecurityWebhookService()),
-    bypass_request_push_ruleset: () => (this.securityService ??= new SecurityWebhookService()),
     membership: () => (this.teamService ??= new TeamWebhookService()),
     repository: () => (this.repositoryService ??= new RepositoryWebhookService()),
     personal_access_token_request: () => (this.tokenService ??= new TokenWebhookService()),
-    push: () => (this.repositoryService ??= new RepositoryWebhookService(), this.securityService ??= new SecurityWebhookService()),
+    push: () => (this.repositoryService ??= new RepositoryWebhookService()),
   };
 
   static getServiceForEventType(eventType: ReportGitHubEventType): any {

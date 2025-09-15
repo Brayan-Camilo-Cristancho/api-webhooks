@@ -27,7 +27,6 @@ router.post("/validate-changes-push-user", validateChangesPushUser);
 router.post("/validate-force-push", validateForcePush);
 router.post("/delete-important-branch", reportDeleteImportantBranch);
 router.post("/delete-protection-branch", reportDeleteProtectionBranch);
-router.post("/bypass-push-ruleset", reportBypassPushRuleset);
 router.post("/membership-change", reportMembershipChange);
 router.post("/repository-removed", reportPrivateRepoRemoved);
 router.post("/personal-access-token-request", reportPersonalAccessTokenRequest);

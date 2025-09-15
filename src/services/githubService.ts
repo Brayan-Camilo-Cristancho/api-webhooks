@@ -87,10 +87,14 @@ const listBranches = safeAsync(async (owner: string, repo: string) => {
 
 const getDataUser = safeAsync(async (username: string) => {
 
+	console.log(`Obteniendo datos del usuario: ${username}`);
+
 	const { data: user } = await octokit.rest.users.getByUsername({
 		username: username,
 	});
 
+	console.log(user)
+	
 	return user;
 
 });
