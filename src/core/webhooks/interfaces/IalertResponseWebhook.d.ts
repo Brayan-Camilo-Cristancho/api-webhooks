@@ -4,7 +4,7 @@ export interface AlertResponse {
 	repository?: string | undefined;
 	branch?: string | undefined;
 	alert: string;
-	category: 'high' | 'medium' | 'low' | 'success' | 'notify';
+	category: 'high' | 'medium' | 'low' | 'success' | 'notify' | 'error';
 	sourceUrl?: string;
 	actor?: string;
 }

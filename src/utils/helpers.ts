@@ -1,45 +1,27 @@
-import type { Request, Response, NextFunction } from 'express';
-
-type AsyncRequestHandler = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => Promise<unknown>;
-
-export const 
-asyncHandler = (fn: AsyncRequestHandler) => {
-  return (req: Request, res: Response, next: NextFunction): void => {
-    Promise.resolve(fn(req, res, next)).catch(next);
-  };
-};
-
-export const safeAsync = <T extends (...args: any[]) => Promise<any>>(fn: T) => {
-  return async (...args: Parameters<T>): Promise<Awaited<ReturnType<T>>> => {
-    try {
-      return await fn(...args);
-    } catch (err) {
-      throw err;
-    }
-  };
-};
-
 export const fillTemplate = (template: any, data: Record<string, string>): any => {
+
   const jsonString = JSON.stringify(template);
+
   const replaced = jsonString.replace(/\$\{(.*?)\}/g, (_, key) => {
     const value = data[key.trim()] ?? "";
     return JSON.stringify(value).slice(1, -1);
   });
+
   return JSON.parse(replaced);
+
 };
 
-
 export const mapSeverityConfig = (category: string) => {
-  const config: Record<string, { color: string; badge: string }> = {
-    high: { color: "#CC0000", badge: "ALTA" },
-    medium: { color: "#FFA500", badge: "MEDIA" },
-    low: { color: "#0078D4", badge: "BAJA" },
-    success: { color: "#28A745", badge: "ÉXITO" },
-    notify: { color: "#808080", badge: "NOTIFICACIÓN" },
+
+  const config: Record<string, { badge: string }> = {
+    high: { badge: "ALTA" },
+    medium: { badge: "MEDIA" },
+    low: { badge: "BAJA" },
+    success: { badge: "ÉXITO" },
+    notify: { badge: "NOTIFICACIÓN" },
+    error: { badge: "ERROR" },
   };
+
   return config[category] ?? config.notify;
+
 };

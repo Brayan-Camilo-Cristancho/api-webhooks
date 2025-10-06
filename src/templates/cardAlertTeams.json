@@ -1,62 +1,433 @@
 {
-  "@type": "MessageCard",
-  "@context": "http://schema.org/extensions",
-  "themeColor": "${themeColor}",
-  "summary": "${summary}",
-  "sections": [
+  "type": "message",
+  "attachments": [
     {
-      "activityTitle": "${title-card}",
-      "activitySubtitle": "${sub-title}",
-      "activityImage": "${image}",
-      "markdown": true
-    },
-    {
-
-      "startGroup": true,
-      "heroImage": { "image": "${image-alert}" },
-      "title": "**Sistema de Monitoreo GitHub EMU**",
-      "text": "> Categoría: **${severityBadge}**",
-      "markdown": true
-    },
-    {
-      "startGroup": true,
-      "title": "**Detalles de la detección**",
-      "facts": [
-        { "name": "Tipo de Evento", "value": "${tipo-evento}" },
-        { "name": "Repositorio", "value": "${repository}" },
-        { "name": "Rama", "value": "${branch}" },
-        { "name": "Fecha y Hora", "value": "${formattedDate}" },
-        { "name": "Usuario", "value": "${actor}" }
-      ],
-      "markdown": true
-    },
-    {
-      "startGroup": true,
-      "title": "\n**Mensaje de Alerta**\n",
-      "text": "```${alert}```",
-      "markdown": true
-    },
-    {
-      "startGroup": true,
-      "title": "**Información Adicional**",
-      "text": "Este mensaje fue generado automáticamente.",
-      "markdown": true
-    }
-  ],
-  "potentialAction": [
-    {
-      "@type": "OpenUri",
-      "name": "GitHub EMU",
-      "targets": [
-        { "os": "default", "uri": "https://github.com/${repository}" }
-      ]
-    },
-    {
-      "@type": "OpenUri",
-      "name": "Lineamiento de GIT",
-      "targets": [
-        { "os": "default", "uri": "https://docs.github.com/en/webhooks" }
-      ]
+      "contentType": "application/vnd.microsoft.card.adaptive",
+      "content": {
+        "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+        "type": "AdaptiveCard",
+        "version": "1.5",
+        "body": [
+          {
+            "type": "Container",
+            "style": "accent",
+            "showBorder": true,
+            "roundedCorners": true,
+            "separator": true,
+            "items": [
+              {
+                "type": "ColumnSet",
+                "columns": [
+                  {
+                    "type": "Column",
+                    "width": "auto",
+                    "verticalContentAlignment": "Center",
+                    "items": [
+                      {
+                        "type": "Image",
+                        "name": "Person",
+                        "url": "${image}",
+                        "size": "Medium",
+                        "style": "RoundedCorners",
+                        "spacing": "Medium",
+                        "backgroundColor": "transparent"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Column",
+                    "width": "stretch",
+                    "items": [
+                      {
+                        "type": "TextBlock",
+                        "text": "${title-card}",
+                        "weight": "Bolder",
+                        "size": "Large",
+                        "wrap": true,
+                        "color": "default"
+                      },
+                      {
+                        "type": "TextBlock",
+                        "text": "${sub-title}",
+                        "isSubtle": true,
+                        "wrap": true,
+                        "spacing": "Small",
+                        "style": "columnHeader",
+                        "fontType": "Monospace",
+                        "size": "Small",
+                        "color": "Accent"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "spacing": "Large",
+            "items": [
+              {
+                "type": "ColumnSet",
+                "columns": [
+                  {
+                    "type": "Column",
+                    "width": "auto",
+                    "items": [
+                      {
+                        "type": "Icon",
+                        "name": "AlertOn",
+                        "color": "Accent",
+                        "style": "Filled",
+                        "size": "Small",
+                        "spacing": "ExtraLarge"
+                      }
+                    ],
+                    "showBorder": true,
+                    "style": "accent",
+                    "roundedCorners": true
+                  },
+                  {
+                    "type": "Column",
+                    "items": [
+                      {
+                        "type": "TextBlock",
+                        "text": "Sistema de Monitoreo GitHub EMU",
+                        "weight": "Bolder",
+                        "size": "Medium",
+                        "wrap": true,
+                        "color": "default"
+                      },
+                      {
+                        "type": "Badge",
+                        "text": "${severityBadge}",
+                        "style": "Warning",
+                        "appearance": "Tint",
+                        "shape": "Rounded"
+                      }
+                    ],
+                    "spacing": "Large",
+                    "separator": true,
+                    "width": "stretch"
+                  }
+                ]
+              }
+            ],
+            "separator": true
+          },
+          {
+            "type": "Container",
+            "separator": true,
+            "spacing": "Large",
+            "items": [
+              {
+                "type": "Table",
+                "columns": [
+                  {
+                    "width": 1
+                  },
+                  {
+                    "width": 2
+                  },
+                  {
+                    "width": 1
+                  }
+                ],
+                "rows": [
+                  {
+                    "type": "TableRow",
+                    "cells": [
+                      {
+                        "type": "TableCell",
+                        "items": [
+                          {
+                            "type": "TextBlock",
+                            "text": "Métrica",
+                            "weight": "Bolder"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "TableCell",
+                        "items": [
+                          {
+                            "type": "TextBlock",
+                            "text": "Valor",
+                            "weight": "Bolder"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "TableCell",
+                        "items": [
+                          {
+                            "type": "TextBlock",
+                            "text": "Estado",
+                            "weight": "Bolder"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "TableRow",
+                    "cells": [
+                      {
+                        "type": "TableCell",
+                        "items": [
+                          {
+                            "type": "TextBlock",
+                            "text": "Evento"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "TableCell",
+                        "items": [
+                          {
+                            "type": "TextBlock",
+                            "text": "${tipo-evento}",
+                            "wrap": true
+                          }
+                        ]
+                      },
+                      {
+                        "type": "TableCell",
+                        "items": [
+                          {
+                            "type": "Icon",
+                            "name": "${tipoEventoStatus}",
+                            "color": "${tipoEventoColor}",
+                            "size": "xSmall"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "TableRow",
+                    "cells": [
+                      {
+                        "type": "TableCell",
+                        "items": [
+                          {
+                            "type": "TextBlock",
+                            "text": "Repositorio"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "TableCell",
+                        "items": [
+                          {
+                            "type": "TextBlock",
+                            "text": "${repository}",
+                            "wrap": true
+                          }
+                        ]
+                      },
+                      {
+                        "type": "TableCell",
+                        "items": [
+                          {
+                            "type": "Icon",
+                            "name": "${repositoryStatus}",
+                            "color": "${repositoryColor}",
+                            "size": "xSmall"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "TableRow",
+                    "cells": [
+                      {
+                        "type": "TableCell",
+                        "items": [
+                          {
+                            "type": "TextBlock",
+                            "text": "Rama"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "TableCell",
+                        "items": [
+                          {
+                            "type": "TextBlock",
+                            "text": "${branch}",
+                            "wrap": true
+                          }
+                        ]
+                      },
+                      {
+                        "type": "TableCell",
+                        "items": [
+                          {
+                            "type": "Icon",
+                            "name": "${branchStatus}",
+                            "color": "${branchColor}",
+                            "size": "xSmall"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "TableRow",
+                    "cells": [
+                      {
+                        "type": "TableCell",
+                        "items": [
+                          {
+                            "type": "TextBlock",
+                            "text": "Fecha y Hora"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "TableCell",
+                        "items": [
+                          {
+                            "type": "TextBlock",
+                            "text": "${formattedDate}"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "TableCell",
+                        "items": [
+                          {
+                            "type": "Icon",
+                            "name": "${dateStatus}",
+                            "color": "${dateColor}",
+                            "size": "xSmall"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "TableRow",
+                    "cells": [
+                      {
+                        "type": "TableCell",
+                        "items": [
+                          {
+                            "type": "TextBlock",
+                            "text": "Usuario"
+                          }
+                        ]
+                      },
+                      {
+                        "type": "TableCell",
+                        "items": [
+                          {
+                            "type": "TextBlock",
+                            "text": "${actor}",
+                            "wrap": true
+                          }
+                        ]
+                      },
+                      {
+                        "type": "TableCell",
+                        "items": [
+                          {
+                            "type": "Icon",
+                            "name": "${actorStatus}",
+                            "color": "${actorColor}",
+                            "size": "xSmall"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "Container",
+            "spacing": "Large",
+            "items": [
+              {
+                "type": "ColumnSet",
+                "columns": [
+                  {
+                    "type": "Column",
+                    "width": "auto",
+                    "items": [
+                      {
+                        "type": "Icon",
+                        "name": "TextBulletListSquareWarning",
+                        "color": "Warning",
+                        "style": "Filled",
+                        "size": "Small",
+                        "spacing": "ExtraLarge"
+                      }
+                    ],
+                    "showBorder": true,
+                    "style": "accent",
+                    "roundedCorners": true
+                  },
+                  {
+                    "type": "Column",
+                    "items": [
+                      {
+                        "type": "TextBlock",
+                        "text": "Mensaje de alerta",
+                        "weight": "Bolder",
+                        "size": "Medium",
+                        "wrap": true,
+                        "color": "Warning"
+                      },
+                      {
+                        "type": "TextBlock",
+                        "text": "${alert}",
+                        "isSubtle": true,
+                        "wrap": true,
+                        "spacing": "Small",
+                        "style": "columnHeader",
+                        "fontType": "Monospace",
+                        "size": "Small",
+                        "color": "Accent"
+                      }
+                    ],
+                    "spacing": "Large",
+                    "separator": true,
+                    "width": "stretch"
+                  }
+                ]
+              }
+            ],
+            "separator": true
+          },
+          {
+            "type": "CompoundButton",
+            "title": "Información Adicional",
+            "description": "Este mensaje fue generado automáticamente por detección webhook",
+            "spacing": "ExtraLarge",
+            "separator": true
+          }
+        ],
+        "actions": [
+          {
+            "type": "Action.OpenUrl",
+            "title": "Acceder a GitHub EMU",
+            "url": "https://github.com/bocc-principal",
+            "iconUrl": "icon:DocumentEndnote",
+            "style": "positive"
+          },
+          {
+            "type": "Action.OpenUrl",
+            "title": "Lineamientos GIT",
+            "url": "https://bancoccidente.sharepoint.com/sites/direcciondearquitecturaTI/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FdirecciondearquitecturaTI%2FShared%20Documents%2F01%2E%20Gobierno%2F06%2ELineamientos%2FSAT%2DLIN024%2DLineamientos%20Git%2Epdf&parent=%2Fsites%2FdirecciondearquitecturaTI%2FShared%20Documents%2F01%2E%20Gobierno%2F06%2ELineamientos",
+            "iconUrl": "icon:DocumentFolder",
+            "style": "positive"
+          }
+        ]
+      }
     }
   ]
 }

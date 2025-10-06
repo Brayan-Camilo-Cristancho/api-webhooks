@@ -1,17 +1,14 @@
 import { Router } from "express";
 import { json } from "express";
 import { verifySignature } from "../middlewares/index.js";
-import { 
+import {
   changesGeneratePullRequest,
-  reportBypassPushRuleset,
   reportDeleteImportantBranch,
   reportDeleteProtectionBranch,
-  reportMembershipChange,
-  reportPersonalAccessTokenRequest,
   reportPrivateRepoRemoved,
+  testSendToPowerAutomate,
   validateChangesFolderConfig,
-  validateChangesPushUser,
-  validateForcePush
+  validateChangesPushUser
 } from "../controllers/index.js";
 import { githubPingHandler } from "../middlewares/githubEventHandler.js";
 
@@ -22,13 +19,11 @@ router.use(json({ verify: verifySignature }));
 router.use(githubPingHandler);
 
 router.post("/generate-pull-request", changesGeneratePullRequest);
+router.get("/test", testSendToPowerAutomate);
 router.post("/validate-changes-folder", validateChangesFolderConfig);
 router.post("/validate-changes-push-user", validateChangesPushUser);
-router.post("/validate-force-push", validateForcePush);
 router.post("/delete-important-branch", reportDeleteImportantBranch);
 router.post("/delete-protection-branch", reportDeleteProtectionBranch);
-router.post("/membership-change", reportMembershipChange);
 router.post("/repository-removed", reportPrivateRepoRemoved);
-router.post("/personal-access-token-request", reportPersonalAccessTokenRequest);
 
 export default router;

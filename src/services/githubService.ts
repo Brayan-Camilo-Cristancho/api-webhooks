@@ -93,8 +93,6 @@ const getDataUser = safeAsync(async (username: string) => {
 		username: username,
 	});
 
-	console.log(user)
-
 	return user;
 
 });

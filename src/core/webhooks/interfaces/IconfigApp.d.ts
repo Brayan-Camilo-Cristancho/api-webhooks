@@ -6,6 +6,6 @@ export interface AppConfig {
 		GitHubTokenApi: string;
 		GitHubTokenValidation: string;
 		GitHubOwner: string;
-		comunication: string;
+		communication: string;
 	};
 }

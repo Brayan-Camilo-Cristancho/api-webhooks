@@ -1,8 +1,8 @@
 import type { NextFunction, Request, Response } from "express";
 import { BadRequestError, sendSuccessResponse, asyncHandler } from "../../utils/index.js";
 import { WebhookServiceFactory } from "../../services/index.js";
-import { sendToTeams } from "../../services/comunicationService.js";
-import type { BranchProtectionRuleEventPayload, BypassPushRulesetEventPayload, DeleteEventPayload, MembershipEventPayload, PersonalAccessTokenRequestEventPayload, ReportGitHubEventType, RepositoryEventPayload } from "../../core/index.js";
+import { sendToPowerAutomate } from "../../services/comunicationService.js";
+import type { BranchProtectionRuleEventPayload, DeleteEventPayload, ReportGitHubEventType, RepositoryEventPayload } from "../../core/index.js";
 
 const reportDeleteImportantBranch = asyncHandler(async (req: Request, res: Response, _: NextFunction) => {
 
@@ -26,7 +26,7 @@ const reportDeleteImportantBranch = asyncHandler(async (req: Request, res: Respo
 			const result = WebhookServiceFactory.getServiceForEventType(event)
 				.validateDeletedBranch(payload);
 
-			if (result) sendToTeams(result);
+			if (result) sendToPowerAutomate(result);
 
 		} catch (error) {
 			console.error("Error procesando validateDeletedBranch:", error);
@@ -55,64 +55,10 @@ const reportDeleteProtectionBranch = asyncHandler(async (req: Request, res: Resp
 
 			console.log("Resultado de validateBranchProtectionRemoval:", result);
 
-			if (result) sendToTeams(result);
+			if (result) sendToPowerAutomate(result);
 
 		} catch (error) {
 			console.error("Error procesando validateBranchProtectionRemoval:", error);
-		}
-	});
-
-});
-
-const reportBypassPushRuleset = asyncHandler(async (req: Request, res: Response, _: NextFunction) => {
-
-	const event = req.headers["x-github-event"] as ReportGitHubEventType;
-
-	if (event !== "bypass_request_push_ruleset" && event !== "push") {
-		throw new BadRequestError("Evento no soportado. Solo se procesan bypass_request_push_ruleset y push.", "UNSUPPORTED_EVENT");
-	}
-
-	const payload = req.body as BypassPushRulesetEventPayload;
-
-	sendSuccessResponse(res, { message: "Webhook recibido para bypass push ruleset" });
-
-	setImmediate(() => {
-
-		try {
-			const result = WebhookServiceFactory.getServiceForEventType(event)
-				.monitorBypassPushRuleset(payload);
-
-			if (result) sendToTeams(result);
-
-		} catch (error) {
-			console.error("Error procesando monitorBypassPushRuleset:", error);
-		}
-	});
-
-});
-
-const reportMembershipChange = asyncHandler(async (req: Request, res: Response, _: NextFunction) => {
-
-	const event = req.headers["x-github-event"] as ReportGitHubEventType;
-
-	if (event !== "membership") {
-		throw new BadRequestError("Evento no soportado. Solo se procesan eventos membership.", "UNSUPPORTED_EVENT");
-	}
-
-	const payload = req.body as MembershipEventPayload;
-
-	sendSuccessResponse(res, { message: "Webhook recibido para cambios de membresía" });
-
-	setImmediate(() => {
-
-		try {
-			const result = WebhookServiceFactory.getServiceForEventType(event)
-				.monitorMembershipChanges(payload);
-
-			if (result) sendToTeams(result);
-
-		} catch (error) {
-			console.error("Error procesando monitorMembershipChanges:", error);
 		}
 	});
 
@@ -140,46 +86,17 @@ const reportPrivateRepoRemoved = asyncHandler(async (req: Request, res: Response
 			const result = WebhookServiceFactory.getServiceForEventType(event)
 				.monitorPrivateRepositoryRemoved(payload);
 
-			if (result) sendToTeams(result);
+			if (result) sendToPowerAutomate(result);
 
 		} catch (error) {
 			console.error("Error procesando monitorPrivateRepositoryRemoved:", error);
 		}
 	});
 });
-
-const reportPersonalAccessTokenRequest = asyncHandler(async (req: Request, res: Response, _: NextFunction) => {
-
-	const event = req.headers["x-github-event"] as ReportGitHubEventType;
-
-	if (event !== "personal_access_token_request") {
-		throw new BadRequestError("Evento no soportado. Solo se procesan eventos personal_access_token_request.", "UNSUPPORTED_EVENT");
-	}
-
-	const payload = req.body as PersonalAccessTokenRequestEventPayload;
-
-	sendSuccessResponse(res, { message: "Webhook recibido para solicitudes de PAT" });
-
-	setImmediate(() => {
-
-		try {
-			const result = WebhookServiceFactory.getServiceForEventType(event)
-				.monitorPersonalAccessTokenRequests(payload);
-
-			if (result) sendToTeams(result);
-			
-		} catch (error) {
-			console.error("Error procesando monitorPersonalAccessTokenRequests:", error);
-		}
-	});
-
-});
+;
 
 export {
 	reportDeleteImportantBranch,
 	reportDeleteProtectionBranch,
-	reportBypassPushRuleset,
-	reportMembershipChange,
-	reportPrivateRepoRemoved,
-	reportPersonalAccessTokenRequest
+	reportPrivateRepoRemoved
 };

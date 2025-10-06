@@ -1,5 +1,4 @@
-import { json } from 'stream/consumers';
-import type { AlertResponse, BranchProtectionRuleEventPayload, BypassPushRulesetEventPayload, DeleteEventPayload, MembershipEventPayload, PersonalAccessTokenRequestEventPayload, RepositoryEventPayload } from '../../core/index.js';
+import type { AlertResponse, BranchProtectionRuleEventPayload, DeleteEventPayload, RepositoryEventPayload } from '../../core/index.js';
 import { githubService } from '../githubService.js';
 
 export class SecurityWebhookService {
@@ -30,6 +29,7 @@ export class SecurityWebhookService {
 		};
 	}
 
+	// TODO: Revisar la validación por owner>
 	validateBranchProtectionRemoval(payload: BranchProtectionRuleEventPayload): AlertResponse | null {
 
 		const action = payload.action;
@@ -60,34 +60,6 @@ export class SecurityWebhookService {
 
 export class TeamWebhookService {
 
-	monitorMembershipChanges(payload: MembershipEventPayload): AlertResponse | null {
-
-		const action = payload.action;
-
-		const member = payload.member?.login;
-
-		const team = payload.team?.name;
-
-		const organization = payload.organization?.login;
-
-		const sender = payload.sender?.login;
-
-		if (action !== "added" && action !== "removed") {
-			return null;
-		}
-
-		const alertMessage =
-			action === "added"
-				? `El usuario ${member} fue agregado al equipo ${team} en la organización ${organization} por ${sender}.`
-				: `El usuario ${member} fue eliminado del equipo ${team} en la organización ${organization} por ${sender}.`;
-
-		return {
-			event: "membership",
-			message: `Cambio en membresía detectado: ${action}`,
-			alert: alertMessage,
-			category: 'low'
-		};
-	}
 }
 
 export class RepositoryWebhookService {
@@ -208,7 +180,6 @@ export class RepositoryWebhookService {
 					commitMessage: `"${commit.message}"`
 				}
 
-
 				alertMessages.push(message);
 			}
 
@@ -232,87 +203,9 @@ export class RepositoryWebhookService {
 		};
 	}
 
-	async forcePush(payload: RepositoryEventPayload): Promise<AlertResponse | null> {
-
-
-		const repo = payload.repository.name;
-
-		const branch = /main/gi;
-
-		const before = payload.before || '';
-
-		const after = payload.after || '';
-
-		const commits = payload.commits || [];
-
-		if (!branch.test(payload.ref || '')) {
-			console.log(`Evento recibido en rama no soportada: ${payload.ref}`);
-			return null;
-		}
-
-		let status = "No clasificado";
-
-		if (before.startsWith("000000")) {
-			return null;
-		} else if (after.startsWith("000000")) {
-			return null;
-		} else if (commits.length > 0) {
-			return null;
-		} else {
-
-			const repo = payload.repository.name;
-
-			const exists = await githubService.commitExists(repo, before);
-
-			if (!exists) {
-				status = `Force push detectado en el repositorio ${repo} y en la rama ${payload.ref}`;
-			} else {
-				status = `Posible rebase/reset en el repositorio ${repo} y en la rama ${payload.ref}`;
-			}
-		}
-
-		return {
-			event: 'repository',
-			message: "Webhook recibido y procesado correctamente, se crea alerta de posible force push",
-			repository: repo,
-			alert: status,
-			category: 'low'
-		};
-	}
-
 }
 
 export class TokenWebhookService {
 
-	monitorPersonalAccessTokenRequests(payload: PersonalAccessTokenRequestEventPayload): AlertResponse {
 
-		const action = payload.action;
-
-		const requestInfo = payload.personal_access_token_request;
-
-		const org = payload.organization?.login || "organización desconocida";
-
-		const user = requestInfo?.owner?.login || "desconocido";
-
-		const scopes = requestInfo?.scopes?.join(", ") || "sin scopes";
-
-		const state = requestInfo?.state || "unknown";
-
-		let alertMessage = "";
-
-		if (action === "created") {
-			alertMessage = `El usuario ${user} solicitó un token de acceso personal (PAT) para la organización ${org} con scopes: ${scopes}. Estado: ${state}`;
-		} else if (action === "approved") {
-			alertMessage = `La solicitud de PAT para ${user} en ${org} fue APROBADA. Scopes: ${scopes}`;
-		} else if (action === "denied") {
-			alertMessage = `La solicitud de PAT para ${user} en ${org} fue RECHAZADA.`;
-		}
-
-		return {
-			event: "personal_access_token_request",
-			message: `Evento PAT detectado: ${action}`,
-			alert: alertMessage,
-			category: 'notify'
-		};
-	}
 }

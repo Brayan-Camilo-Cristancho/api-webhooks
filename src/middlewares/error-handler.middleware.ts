@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { AppError, sendErrorResponse } from '../utils/index.js';
+import { sendToPowerAutomate } from '../services/comunicationService.js';
 
 export const errorHandler = (
   err: Error | AppError,
@@ -7,6 +8,7 @@ export const errorHandler = (
   res: Response,
   _next: NextFunction
 ): void => {
+
   console.error('Error:', err);
 
   if (err instanceof AppError) {
@@ -20,6 +22,20 @@ export const errorHandler = (
   }
 
   console.error('Error no controlado:', err);
+
+  sendToPowerAutomate(
+    {
+      event: 'Internal Server Error',
+      message: 'Ha ocurrido un error interno en el servidor',
+      repository: 'N/A',
+      branch: 'N/A',
+      alert: 'error',
+      category: 'error',
+      sourceUrl: 'N/A',
+      actor: 'N/A'
+    }
+  )
+
   sendErrorResponse(
     res,
     'INTERNAL_SERVER_ERROR',
@@ -28,13 +44,29 @@ export const errorHandler = (
       : err.message || 'Error interno del servidor',
     500
   );
+
 };
 
 export const notFoundHandler = (req: Request, res: Response): void => {
+  
+  sendToPowerAutomate(
+    {
+      event: 'Internal Server Error',
+      message: 'Ha ocurrido un error interno en el servidor',
+      repository: 'N/A',
+      branch: 'N/A',
+      alert: 'error',
+      category: 'error',
+      sourceUrl: 'N/A',
+      actor: 'N/A'
+    }
+  )
+
   sendErrorResponse(
     res,
     'NOT_FOUND',
     `Ruta no encontrada: ${req.method} ${req.originalUrl}`,
     404
   );
+
 };

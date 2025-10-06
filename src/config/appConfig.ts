@@ -9,7 +9,7 @@ const appConfig: AppConfig = {
 		GitHubTokenApi: config.github.token_api,
 		GitHubTokenValidation: config.github.token_validation,
 		GitHubOwner: config.github.owner,
-		comunication: config.comunication?.teams || ''
+		communication: config.comunication?.teams || ''
 	}
 };
 
