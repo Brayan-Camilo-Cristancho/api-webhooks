@@ -48,6 +48,8 @@ export const errorHandler = (
 };
 
 export const notFoundHandler = (req: Request, res: Response): void => {
+
+    console.error('Error no controlado:', req);
   
   sendToPowerAutomate(
     {
