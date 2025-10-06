@@ -15,6 +15,7 @@ export interface DeleteEventPayload {
   ref: string;
   ref_type: 'branch';
   repository: GitHubRepository;
+  sender: GitHubUser;
 }
 
 export interface BranchProtectionRuleEventPayload {

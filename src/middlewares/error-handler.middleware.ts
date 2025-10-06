@@ -29,7 +29,7 @@ export const errorHandler = (
       message: 'Ha ocurrido un error interno en el servidor',
       repository: 'N/A',
       branch: 'N/A',
-      alert: 'error',
+      alert: err.message || 'error',
       category: 'error',
       sourceUrl: 'N/A',
       actor: 'N/A'

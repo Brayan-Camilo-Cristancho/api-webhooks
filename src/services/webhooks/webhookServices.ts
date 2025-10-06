@@ -25,7 +25,8 @@ export class SecurityWebhookService {
 			repository,
 			branch,
 			alert: `Alerta: Se eliminó la rama protegida ${branch} en el repositorio ${repository}`,
-			category: "high"
+			category: "high",
+			actor: payload.sender?.login
 		};
 	}
 
