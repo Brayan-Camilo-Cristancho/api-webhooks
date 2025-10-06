@@ -11,18 +11,6 @@ export const errorHandler = (
 
   console.error('Error:', err);
 
-  if (err instanceof AppError) {
-    sendErrorResponse(res, err.errorCode, err.message, err.statusCode);
-    return;
-  }
-
-  if (err.name === 'ValidationError') {
-    sendErrorResponse(res, 'VALIDATION_ERROR', err.message, 422);
-    return;
-  }
-
-  console.error('Error no controlado:', err);
-
   sendToPowerAutomate(
     {
       event: 'Internal Server Error',
@@ -35,6 +23,16 @@ export const errorHandler = (
       actor: 'N/A'
     }
   )
+
+  if (err instanceof AppError) {
+    sendErrorResponse(res, err.errorCode, err.message, err.statusCode);
+    return;
+  }
+
+  if (err.name === 'ValidationError') {
+    sendErrorResponse(res, 'VALIDATION_ERROR', err.message, 422);
+    return;
+  }
 
   sendErrorResponse(
     res,
@@ -49,20 +47,7 @@ export const errorHandler = (
 
 export const notFoundHandler = (req: Request, res: Response): void => {
 
-    console.error('Error no controlado:', req);
-  
-  sendToPowerAutomate(
-    {
-      event: 'Internal Server Error',
-      message: 'Ha ocurrido un error interno en el servidor',
-      repository: 'N/A',
-      branch: 'N/A',
-      alert: 'error',
-      category: 'error',
-      sourceUrl: 'N/A',
-      actor: 'N/A'
-    }
-  )
+  console.error('Ruta no encontrada:', `${req.method} ${req.originalUrl}`);
 
   sendErrorResponse(
     res,
