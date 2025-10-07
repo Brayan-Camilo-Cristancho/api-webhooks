@@ -25,10 +25,8 @@ const changesGeneratePullRequest = asyncHandler(async (req: Request, res: Respon
   setImmediate(() => {
     try {
 
-      const result = WebhookServiceFactory.getServiceForEventType(event)
-        .monitorPushUser(payload);
-
-      if (result) sendToPowerAutomate(result);
+      WebhookServiceFactory.getServiceForEventType(event)
+        .generatePullRequest(payload);
 
     } catch (error) {
 

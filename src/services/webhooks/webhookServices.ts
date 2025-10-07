@@ -182,7 +182,7 @@ export class RepositoryWebhookService {
 			if (protectedFiles.length > 0) {
 				const message =
 				{
-					message: `Carpeta protegida modificada en el repositorio ${repo.full_name} por el usuario ${commit.author.username}, enlace: ${commit.url}`,
+					message: `Carpeta protegida modificada en el repositorio ${repo.full_name} por el usuario ${commit.author.username}.}`,
 					file: `${protectedFiles.join(", ")}`,
 					commit: `${commit.url}`,
 					commitMessage: `"${commit.message}"`
@@ -206,8 +206,9 @@ export class RepositoryWebhookService {
 			message: "Alerta sobre carpeta protegida modificada ",
 			branch: `${branch}`,
 			repository: repo.full_name,
-			alert: alertMessages.map(am => ` Alerta: ${am.message}, Archivo: ${am.file}, Commit: ${am.commit}, Mensaje: ${am.commitMessage}`).join(" | "),
-			category: 'medium'
+			alert: alertMessages.map(am => ` Alerta: ${am.message}, Archivo: ${am.file}, Commit: ${am.commit}, Mensaje del commit: ${am.commitMessage}`).join(" | "),
+			category: 'medium',
+			actor: payload.pusher?.name || "N/A"
 		};
 	}
 
