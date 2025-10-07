@@ -36,12 +36,9 @@ function verifySignature(req: Request, _: Response, buf: Buffer) {
 }
 
 export function validateJsonMiddleware(req: Request, res: Response, next: NextFunction) {
-
     const contentType = req.headers["content-type"];
-
     const eventType = req.headers["x-github-event"];
-
-    const userAgent = req.headers["user-agent"];
+    const userAgent = req.headers["user-agent"] || "";
 
     console.log("---- Webhook recibido ----");
     console.log("Fecha:", new Date().toISOString());
@@ -51,24 +48,28 @@ export function validateJsonMiddleware(req: Request, res: Response, next: NextFu
     console.log("Body recibido:", req.body);
     console.log("--------------------------");
 
+    if (userAgent.includes("mrtscan") || userAgent.includes("HealthCheck")) {
+        console.log("🟡 Solicitud ignorada (bot de monitoreo Azure)");
+        return res.status(200).send("Ignored health check");
+    }
+
     const exceptions = ["ping"];
 
     if (exceptions.includes(eventType as string)) {
-        console.log("Evento 'ping' detectado. Se omite validación de contenido JSON.");
+        console.log("🟢 Ping de GitHub recibido, sin validación JSON");
         return next();
     }
 
     if (!contentType?.includes("application/json")) {
-        console.warn(`❌ Tipo de contenido inválido: ${contentType}`);
         throw new BadRequestError(
             `El tipo de contenido debe ser 'application/json'. Recibido: ${contentType}`,
             "INVALID_CONTENT_TYPE"
         );
     }
 
-    console.log("✅ Tipo de contenido válido. Continuando con el flujo...");
     next();
 }
+
 
 
 export { verifySignature }

@@ -55,7 +55,8 @@ export interface RepositoryEventPayload {
   head_commit: {
     author: {
       name: string
-      email: string
+      email: string,
+      username?: string
     },
     committer: {
       name: string,

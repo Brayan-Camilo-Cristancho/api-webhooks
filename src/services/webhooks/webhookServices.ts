@@ -21,7 +21,7 @@ export class SecurityWebhookService {
 
 		return {
 			event: "delete",
-			message: "Webhook recibido y procesado correctamente, se crea alerta de rama importante eliminada",
+			message: "Rama importante eliminada",
 			repository,
 			branch,
 			alert: `Alerta: Se eliminó la rama protegida ${branch} en el repositorio ${repository}, enlace: ${payload.repository?.html_url}`,
@@ -113,7 +113,12 @@ export class RepositoryWebhookService {
 
 		if (gitData) {
 
+			if (gitData.username && gitData.username.toLowerCase() === githubUser.toLowerCase()) {
+				gitData.name = gitData.username;
+			}
+
 			if (gitData.name?.toLowerCase() !== githubUser.toLowerCase()) {
+
 				inconsistencies.push(
 					`El autor del commit (username: ${gitData.name}, email: ${gitData.email}) no coincide con el usuario de GitHub (username: ${githubUser}, email: ${githubEmail}).`
 				);
@@ -134,6 +139,7 @@ export class RepositoryWebhookService {
 				repository: payload.repository?.full_name ?? "",
 				alert: inconsistencies.join(" | "),
 				category: "low",
+				actor: githubUser
 			};
 		}
 
