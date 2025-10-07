@@ -12,7 +12,7 @@ function verifySignature(req: Request, _: Response, buf: Buffer) {
         throw new Error("Firma no encontrada en headers");
     }
 
-    if(!GITHUB_SECRET) {
+    if (!GITHUB_SECRET) {
         throw new Error("Clave secreta")
     }
 
@@ -36,19 +36,38 @@ function verifySignature(req: Request, _: Response, buf: Buffer) {
 }
 
 export function validateJsonMiddleware(req: Request, res: Response, next: NextFunction) {
-  
+
     const contentType = req.headers["content-type"];
 
-  if (!contentType || !contentType.includes("application/json")) {
+    const eventType = req.headers["x-github-event"];
 
-    throw new BadRequestError(
-      "El tipo de contenido debe ser 'application/json'.",
-      "INVALID_CONTENT_TYPE"
-    );
+    const userAgent = req.headers["user-agent"];
 
-  }
+    console.log("---- Webhook recibido ----");
+    console.log("Fecha:", new Date().toISOString());
+    console.log("User-Agent:", userAgent);
+    console.log("Content-Type:", contentType);
+    console.log("X-GitHub-Event:", eventType);
+    console.log("Body recibido:", req.body);
+    console.log("--------------------------");
 
-  next();
+    const exceptions = ["ping"];
+
+    if (exceptions.includes(eventType as string)) {
+        console.log("Evento 'ping' detectado. Se omite validación de contenido JSON.");
+        return next();
+    }
+
+    if (!contentType?.includes("application/json")) {
+        console.warn(`❌ Tipo de contenido inválido: ${contentType}`);
+        throw new BadRequestError(
+            `El tipo de contenido debe ser 'application/json'. Recibido: ${contentType}`,
+            "INVALID_CONTENT_TYPE"
+        );
+    }
+
+    console.log("✅ Tipo de contenido válido. Continuando con el flujo...");
+    next();
 }
 
 

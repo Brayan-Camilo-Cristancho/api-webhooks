@@ -24,7 +24,7 @@ export class SecurityWebhookService {
 			message: "Webhook recibido y procesado correctamente, se crea alerta de rama importante eliminada",
 			repository,
 			branch,
-			alert: `Alerta: Se eliminó la rama protegida ${branch} en el repositorio ${repository}`,
+			alert: `Alerta: Se eliminó la rama protegida ${branch} en el repositorio ${repository}, enlace: ${payload.repository?.html_url}`,
 			category: "high",
 			actor: payload.sender?.login
 		};
@@ -52,7 +52,7 @@ export class SecurityWebhookService {
 			message: "Protección de rama eliminada",
 			repository: repositoryFullName,
 			branch: branchName,
-			alert: `Se eliminó la protección de la rama \"${branchName}\" en el repositorio ${repositoryFullName}.`,
+			alert: `Se eliminó la protección de la rama \"${branchName}\" en el repositorio ${repositoryFullName}, enlace: ${payload.repository?.html_url}`,
 			category: "medium"
 		};
 	}
@@ -94,7 +94,8 @@ export class RepositoryWebhookService {
 			message: "Repositorio eliminado",
 			repository: repoName,
 			alert: `Se eliminó un repositorio (${repoName}) en la organización ${org} por ${creator}. URL previa a la eliminación: ${repoUrl}`,
-			category: "high"
+			category: "high",
+			actor: creator || "N/A"
 		};
 	}
 
@@ -175,7 +176,7 @@ export class RepositoryWebhookService {
 			if (protectedFiles.length > 0) {
 				const message =
 				{
-					message: `Carpeta protegida modificada en el repositorio ${repo.full_name} por el usuario ${commit.author.username}`,
+					message: `Carpeta protegida modificada en el repositorio ${repo.full_name} por el usuario ${commit.author.username}, enlace: ${commit.url}`,
 					file: `${protectedFiles.join(", ")}`,
 					commit: `${commit.url}`,
 					commitMessage: `"${commit.message}"`
