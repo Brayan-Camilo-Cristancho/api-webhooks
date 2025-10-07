@@ -1,5 +1,6 @@
 import crypto from "crypto";
-import type { Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
+import { BadRequestError } from "../utils/index.js";
 
 const GITHUB_SECRET = process.env.GITHUB_SECRET;
 
@@ -33,5 +34,22 @@ function verifySignature(req: Request, _: Response, buf: Buffer) {
         throw new Error("Firma inválida");
     }
 }
+
+export function validateJsonMiddleware(req: Request, res: Response, next: NextFunction) {
+  
+    const contentType = req.headers["content-type"];
+
+  if (!contentType || !contentType.includes("application/json")) {
+
+    throw new BadRequestError(
+      "El tipo de contenido debe ser 'application/json'.",
+      "INVALID_CONTENT_TYPE"
+    );
+
+  }
+
+  next();
+}
+
 
 export { verifySignature }

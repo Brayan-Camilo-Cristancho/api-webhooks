@@ -72,11 +72,9 @@ const reportPrivateRepoRemoved = asyncHandler(async (req: Request, res: Response
 		throw new BadRequestError("Evento no soportado. Solo se procesan eventos repository.", "UNSUPPORTED_EVENT");
 	}
 
-	const payload = req.body as any;
+	const payload = req.body as RepositoryEventPayload;
 
-	console.log("Payload recibido en reportPrivateRepoRemoved:", payload);
-
-	if (!payload.payload.repository) {
+	if (!payload.repository) {
 		throw new BadRequestError("No se encontró información del repositorio.", "INVALID_PAYLOAD");
 	}
 
@@ -95,7 +93,7 @@ const reportPrivateRepoRemoved = asyncHandler(async (req: Request, res: Response
 		}
 	});
 });
-;
+
 
 export {
 	reportDeleteImportantBranch,
