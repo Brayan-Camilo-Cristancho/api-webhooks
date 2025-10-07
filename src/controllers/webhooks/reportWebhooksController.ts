@@ -74,6 +74,8 @@ const reportPrivateRepoRemoved = asyncHandler(async (req: Request, res: Response
 
 	const payload = req.body as RepositoryEventPayload;
 
+	console.log("Payload recibido en reportPrivateRepoRemoved:", payload);
+
 	if (!payload.repository) {
 		throw new BadRequestError("No se encontró información del repositorio.", "INVALID_PAYLOAD");
 	}
