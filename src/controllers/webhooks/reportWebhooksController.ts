@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { BadRequestError, sendSuccessResponse, asyncHandler } from "../../utils/index.js";
 import { WebhookServiceFactory } from "../../services/index.js";
-import { sendToPowerAutomate } from "../../services/comunicationService.js";
+import { sendToPowerAutomate } from "../../services/index.js";
 import type { BranchProtectionRuleEventPayload, DeleteEventPayload, ReportGitHubEventType, RepositoryEventPayload } from "../../core/index.js";
 
 const reportDeleteImportantBranch = asyncHandler(async (req: Request, res: Response, _: NextFunction) => {

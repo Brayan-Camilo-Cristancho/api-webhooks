@@ -41,7 +41,7 @@ const environments = {
 		github: {
 			token_api: process.env.GITHUB_SECRET_API_DEV || '',
 			token_validation: process.env.GITHUB_SECRET_VALIDATION_DEV || '',
-			owner: process.env.GITHUB_OWNER_DEV || '',
+			owner: process.env.GITHUB_OWNER_DEV || ''
 		},
 		comunication: {
 			teams: process.env.WEBHOOK_URL_CHANNEL_DEV || ''
@@ -54,7 +54,7 @@ const environments = {
 		github: {
 			token_api: process.env.GITHUB_SECRET_API || '',
 			token_validation: process.env.GITHUB_SECRET_VALIDATION || '',
-			owner: process.env.GITHUB_OWNER || '',
+			owner: process.env.GITHUB_OWNER || ''
 		},
 		comunication: {
 			teams: process.env.WEBHOOK_URL_CHANNEL_PROD || ''

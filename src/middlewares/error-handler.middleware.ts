@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { AppError, sendErrorResponse } from '../utils/index.js';
-import { sendToPowerAutomate } from '../services/comunicationService.js';
+import { sendToPowerAutomate } from '../services/index.js';
 
 export const errorHandler = (
   err: Error | AppError,

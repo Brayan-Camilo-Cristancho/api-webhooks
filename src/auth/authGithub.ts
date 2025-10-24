@@ -11,7 +11,7 @@ const authApi = async () => {
 			data: { login },
 		} = await octokit.rest.users.getAuthenticated();
 
-		console.log(`Login generated at: ${new Date().toLocaleString()} - data: ${login}`);
+		console.log(`Login generated at: ${new Date().toLocaleString()} - user: ${login}`);
 
 	} catch (error) {
 		throw new GitHubApiError(`Error en la API de GitHub`, 500);

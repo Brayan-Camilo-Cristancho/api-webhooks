@@ -5,7 +5,7 @@ import {
   asyncHandler
 } from "../../utils/index.js";
 import { WebhookServiceFactory } from "../../services/index.js";
-import { sendToPowerAutomate } from "../../services/comunicationService.js";
+import { sendToPowerAutomate } from "../../services/index.js";
 import type { AlertResponse, GitHubPushEvent, ReportGitHubEventType } from "../../core/index.js";
 
 const changesGeneratePullRequest = asyncHandler(async (req: Request, res: Response, _: NextFunction) => {
@@ -35,51 +35,6 @@ const changesGeneratePullRequest = asyncHandler(async (req: Request, res: Respon
     }
   });
 
-});
-
-// test borrar
-const testSendToPowerAutomate = asyncHandler(async (_: Request, res: Response, __: NextFunction) => {
-  // Datos dummy (simulan un push de GitHub)
-  const fakePayload = {
-    repository: {
-      name: "demo-repo",
-      full_name: "brayan/demo-repo",
-      url: "https://github.com/brayan/demo-repo",
-    },
-    pusher: {
-      name: "brayancristancho",
-      email: "brayan@example.com",
-    },
-    commits: [
-      {
-        id: "1234567890abcdef",
-        message: "🚀 Commit de prueba para Power Automate",
-        timestamp: new Date().toISOString(),
-        url: "https://github.com/brayan/demo-repo/commit/1234567890abcdef",
-      },
-    ],
-    branch: "main",
-    event: "push (dummy test)",
-  };
-
-  // Respuesta inmediata al cliente
-  res.json({ message: "Payload dummy enviado a Power Automate", fakePayload });
-
-  // Envío asincrónico a Power Automate
-  setImmediate(() =>
-    sendToPowerAutomate({
-      event: fakePayload.event,
-      message: "Payload dummy enviado desde testSendToPowerAutomate",
-      alert: "info",
-      category: "high",
-      repository: fakePayload.repository.full_name,
-      branch: fakePayload.branch,
-      sourceUrl: fakePayload.commits[0]?.url || fakePayload.repository.url,
-      actor: fakePayload.pusher.name,
-      // Puedes agregar el payload original si tu AlertResponse lo permite
-      // payload: fakePayload
-    })
-  );
 });
 
 const validateChangesFolderConfig = asyncHandler(async (req: Request, res: Response, _: NextFunction) => {
@@ -144,4 +99,4 @@ const validateChangesPushUser = asyncHandler(async (req: Request, res: Response,
 
 
 
-export { validateChangesFolderConfig, validateChangesPushUser, changesGeneratePullRequest, testSendToPowerAutomate };
+export { validateChangesFolderConfig, validateChangesPushUser, changesGeneratePullRequest };

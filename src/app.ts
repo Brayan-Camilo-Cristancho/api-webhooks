@@ -1,18 +1,19 @@
 import express, { json, urlencoded } from 'express';
 import type { Application } from 'express';
 import { setRoutes } from './routes/index.js';
-import { errorHandler, notFoundHandler, validateJsonMiddleware } from './middlewares/index.js';
+import { errorHandler, notFoundHandler} from './middlewares/index.js';
 import { appConfig } from './config/index.js';
 import { authApi } from './auth/index.js';
+import { verifySignature } from "./middlewares/index.js";
 
 const app: Application = express();
 const PORT = appConfig.app.port;
 
 app.disable('x-powered-by');
-app.use(json());
-app.use(urlencoded({ extended: true }));
 
-app.use(validateJsonMiddleware);
+app.use(json({ verify: verifySignature }));
+
+app.use(urlencoded({ extended: true }));
 
 setRoutes(app);
 

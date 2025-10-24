@@ -1,7 +1,7 @@
-import { appConfig } from "../config/appConfig.js";
+import { appConfig } from "../config/index.js";
 import type { AlertResponse } from "../core/index.js";
 import cardAlertTemplate from "../templates/cardAlertTeams.json" with { type: "json" };
-import { fillTemplate, mapSeverityConfig } from "../utils/helpers.js";
+import { fillTemplate, mapSeverityConfig } from "../utils/index.js";
 
 const createTeamsMessage = (data: AlertResponse) => {
 
@@ -13,7 +13,7 @@ const createTeamsMessage = (data: AlertResponse) => {
     }
     return { icon: "CheckboxChecked", color: "Good" };
   };
-  
+
   const tipoEventoStatus = getStatus(data.event || "N/A");
   const repoStatus = getStatus(data.repository || "N/A");
   const branchStatus = getStatus(data.branch || "N/A");
@@ -50,8 +50,6 @@ const createTeamsMessage = (data: AlertResponse) => {
 
 };
 
-
-
 const sendToPowerAutomate = async (data: AlertResponse) => {
   try {
 
@@ -79,5 +77,25 @@ const sendToPowerAutomate = async (data: AlertResponse) => {
 
 };
 
+let cachedRanges: string[] = [];
+let lastFetchTime = 0;
 
-export { sendToPowerAutomate };
+const loadGitHubIPs = async () => {
+
+   const now = Date.now();
+
+  if (cachedRanges.length === 0 || now - lastFetchTime > 86_400_000) {
+    const res = await fetch("https://api.github.com/meta");
+    const data = await res.json();
+    cachedRanges = data.hooks || [];
+    lastFetchTime = now;
+    console.log("GitHub IP ranges actualizados:", cachedRanges.length);
+  }
+
+  return cachedRanges;
+  
+};
+
+
+
+export { sendToPowerAutomate, loadGitHubIPs };
