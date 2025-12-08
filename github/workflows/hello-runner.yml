@@ -1,0 +1,18 @@
+name: Test Self-Hosted Runner
+
+on:
+  workflow_dispatch:
+
+jobs:
+  hello-world:
+    runs-on: self-hosted
+    steps:
+      - name: Print Hello World
+        run: echo "Hello World from Self-Hosted Runner 🎉"
+
+      - name: Print runner info
+        run: |
+          echo "Runner name: $RUNNER_NAME"
+          echo "Runner OS: $(uname -a)"
+          echo "Current directory:"
+          pwd
