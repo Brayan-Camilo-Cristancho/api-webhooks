@@ -21,7 +21,7 @@ on:
 jobs:
   crear_webhooks:
     name: Crear webhooks en repositorios
-    runs-on: 
+    runs-on: self-hosted
     steps:
       - name: Mostrar inputs recibidos
         run: |
