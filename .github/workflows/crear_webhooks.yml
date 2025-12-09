@@ -8,14 +8,15 @@ on:
         type: string
       webhooks:
         description: |
-          Array de webhooks a crear (ejemplo: VALIDATE_PUSH_USER,DELETE_IMPORTANT_BRANCH)
-          Webhooks soportados:
-            - DELETE_IMPORTANT_BRANCH: Valida la eliminación de ramas importantes (main, develop, quality).
-            - DELETE_PROTECTION_RULES: Detecta la eliminación de reglas de protección en ramas importantes.
-            - REPOSITORY_REMOVED: Monitorea la eliminación de repositorios privados.
-            - VALIDATE_PUSH_USER: Valida inconsistencias entre usuario/email Git y GitHub en pushes.
-            - GENERATE_PULL_REQUEST: Genera PR automáticamente para pushes en ramas release o develop.
-            - VALIDATE_JENKINSFILE_CHANGES: Detecta cambios en archivos protegidos (config/Jenkinsfile).
+          array de webhooks a crear (ej: validate_push_user, delete_important_branch)
+          webhooks soportados:
+            - delete_important_branch
+            - delete_protection_rules
+            - repository_removed
+            - validate_push_user
+            - generate_pull_request
+            - validate_jenkinsfile_changes
+
         required: true
         type: string
 
