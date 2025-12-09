@@ -35,7 +35,7 @@ jobs:
           echo "{\"repositories\":[\"$repos\"],\"webhooks\":[\"$hooks\"]}" > payload.json
       - name: Llamar API para crear webhooks
         env:
-          API_BASE_URL: ${{ secrets.API_BASE }}
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
           API_SECRET: ${{ secrets.WEBHOOKS_API_SECRET }}
         run: |
           curl -X POST "$API_BASE_URL/crud" \
