@@ -18,27 +18,32 @@ on:
             - VALIDATE_JENKINSFILE_CHANGES: Detecta cambios en archivos protegidos (config/Jenkinsfile).
         required: true
         type: string
+
 jobs:
   crear_webhooks:
     name: Crear webhooks en repositorios
     runs-on: self-hosted
+
     steps:
       - name: Mostrar inputs recibidos
         run: |
           echo "Repositorios: ${{ github.event.inputs.repositories }}"
           echo "Webhooks: ${{ github.event.inputs.webhooks }}"
+
       - name: Preparar payload JSON
         id: build_payload
         run: |
           repos=$(echo "${{ github.event.inputs.repositories }}" | sed 's/,/","/g')
           hooks=$(echo "${{ github.event.inputs.webhooks }}" | sed 's/,/","/g')
           echo "{\"repositories\":[\"$repos\"],\"webhooks\":[\"$hooks\"]}" > payload.json
+
       - name: Llamar API para crear webhooks
         env:
           API_BASE_URL: ${{ secrets.API_BASE_URL }}
           API_SECRET: ${{ secrets.WEBHOOKS_API_SECRET }}
         run: |
           echo "Llamando API: $API_BASE_URL/crud"
+
           curl -X POST "$API_BASE_URL/crud" \
             -H "Content-Type: application/json" \
             -H "x-api-secret: $API_SECRET" \
@@ -52,3 +57,15 @@ jobs:
         run: |
           echo "===== Respuesta de la API ====="
           cat api_response.json
+
+          # Extraer HTTP status del archivo
+          STATUS=$(grep "HTTP_STATUS" api_response.json | cut -d'=' -f2)
+          echo "Código HTTP recibido: $STATUS"
+
+          # Si no es 200 → fallo
+          if [ "$STATUS" -ne 200 ]; then
+            echo "❌ La API respondió un error. Deteniendo el workflow."
+            exit 1
+          fi
+
+          echo "✅ La API respondió correctamente."
