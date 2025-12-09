@@ -32,10 +32,17 @@ jobs:
 
       - name: Preparar payload JSON
         id: build_payload
+        env:
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
         run: |
           repos=$(echo "${{ github.event.inputs.repositories }}" | sed 's/,/","/g')
           hooks=$(echo "${{ github.event.inputs.webhooks }}" | sed 's/,/","/g')
-          echo "{\"repositories\":[\"$repos\"],\"webhooks\":[\"$hooks\"]}" > payload.json
+
+          echo "{
+            \"baseUrl\": \"${API_BASE_URL}\",
+            \"repositories\": [\"$repos\"],
+            \"webhooks\": [\"$hooks\"]
+          }" > payload.json
 
       - name: Llamar API para crear webhooks
         env:
@@ -58,14 +65,12 @@ jobs:
           echo "===== Respuesta de la API ====="
           cat api_response.json
 
-          # Extraer HTTP status del archivo
           STATUS=$(grep "HTTP_STATUS" api_response.json | cut -d'=' -f2)
           echo "Código HTTP recibido: $STATUS"
 
-          # Si no es 200 → fallo
           if [ "$STATUS" -ne 200 ]; then
-            echo "❌ La API respondió un error. Deteniendo el workflow."
+            echo "La API respondió un error. Deteniendo el workflow."
             exit 1
           fi
 
-          echo "✅ La API respondió correctamente."
+          echo "La API respondió correctamente."
