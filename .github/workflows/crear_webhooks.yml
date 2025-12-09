@@ -38,7 +38,7 @@ jobs:
           API_BASE_URL: ${{ secrets.API_BASE_URL }}
           API_SECRET: ${{ secrets.WEBHOOKS_API_SECRET }}
         run: |
-          echo "Llamando API: $API_BASE_URL/webhooks/generate"
+          echo "Llamando API: $API_BASE_URL/crud"
           curl -X POST "$API_BASE_URL/webhooks/generate" \
             -H "Content-Type: application/json" \
             -H "x-api-secret: $API_SECRET" \
