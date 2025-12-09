@@ -40,7 +40,7 @@ jobs:
       - name: Llamar API para crear webhooks
         env:
           API_BASE_URL: ${{ secrets.API_BASE_URL }}
-          API_SECRET: ${{ secrets.WEBHOOKS_API_SECRET }}
+          API_SECRET: ${{ secrets.API_SECRET }}
         run: |
           echo "Llamando API: $API_BASE_URL/crud"
 
